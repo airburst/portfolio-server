@@ -27,6 +27,7 @@ export default {
 
         // Process the file
         const { exif, error, files } = await processFile(filename);
+        console.log({ exif, error, files });
 
         if (filename) {
           console.info(`File ${filename} processed`);

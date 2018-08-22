@@ -8,7 +8,8 @@
     "build": "rimraf dist && babel src -d dist",
     "serve": "node dist/index.js",
     "prod": "npm run build && npm run serve",
-    "test": "jest"
+    "test": "jest",
+    "clear": "rm uploads/* && rm photos/*"
   },
   "author": "Mark Fairhurst",
   "license": "ISC",

@@ -75,7 +75,7 @@ export const resize = filename => size => new Promise((resolve, reject) => {
       resolve(outPath);
     });
   } catch (e) {
-    reject(Error(e.message));
+    reject(e);
   }
 });
 

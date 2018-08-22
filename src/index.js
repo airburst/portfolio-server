@@ -7,7 +7,7 @@ import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import playground from 'graphql-playground-middleware-express';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { version } from '../package.json';
-import { UPLOAD_FOLDER } from './constants';
+import { PHOTOS_FOLDER } from './constants';
 
 dotenv.config();
 
@@ -35,7 +35,7 @@ const corsOptions = {
 
 app.use(bodyParser.json({ limit: '4mb' }));
 app.use('/playground', playground({ endpointUrl: graphqlEndpoint }));
-app.use('/uploads', express.static(path.join(__dirname, '../', UPLOAD_FOLDER)));
+app.use('/uploads', express.static(path.join(__dirname, '../', PHOTOS_FOLDER)));
 app.use(cors(corsOptions));
 
 server.applyMiddleware({ app });
