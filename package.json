@@ -9,7 +9,7 @@
     "serve": "node dist/index.js",
     "prod": "npm run build && npm run serve",
     "test": "jest",
-    "clear": "rm uploads/* && rm photos/*"
+    "clear": "rm -rf uploads/* && rm -rf photos/*"
   },
   "author": "Mark Fairhurst",
   "license": "ISC",

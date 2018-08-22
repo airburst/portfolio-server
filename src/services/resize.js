@@ -1,8 +1,11 @@
 import path from 'path';
 import fs from 'file-system';
+import dotenv from 'dotenv';
 import mkdirp from 'mkdirp';
 import sharp from 'sharp';
 import { UPLOAD_FOLDER, PHOTOS_FOLDER } from '../constants';
+
+dotenv.config();
 
 const BASE_URL = path.join(__dirname, `../../${PHOTOS_FOLDER}`);
 const SIZES = [
@@ -51,6 +54,11 @@ const makeFolderName = (fileName) => {
   return getNewFileVersion(filePath);
 };
 
+const makeRelativePath = (absolutePath) => {
+  const abs = path.join(__dirname, '../..');
+  return absolutePath.replace(abs, process.env.SERVER_URI);
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export const resize = filename => size => new Promise((resolve, reject) => {
   const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
@@ -72,7 +80,9 @@ export const resize = filename => size => new Promise((resolve, reject) => {
           .toFormat('jpeg')
           .toFile(outPath);
       }
-      resolve(outPath);
+
+      // Convert file paths to relative server paths
+      resolve(makeRelativePath(outPath));
     });
   } catch (e) {
     reject(e);

@@ -35,7 +35,7 @@ const corsOptions = {
 
 app.use(bodyParser.json({ limit: '4mb' }));
 app.use('/playground', playground({ endpointUrl: graphqlEndpoint }));
-app.use('/uploads', express.static(path.join(__dirname, '../', PHOTOS_FOLDER)));
+app.use('/photos', express.static(path.join(__dirname, '../', PHOTOS_FOLDER)));
 app.use(cors(corsOptions));
 
 server.applyMiddleware({ app });
