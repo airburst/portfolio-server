@@ -10,4 +10,5 @@ coverage
 dist
 logs
 files
-retryTest.js
+.vscode
+scripts
