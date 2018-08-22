@@ -1,0 +1,44 @@
+{
+  "name": "portfolio-server",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon --exec babel-node src/index.js",
+    "start": "babel-node src/index.js",
+    "build": "rimraf dist && babel src -d dist",
+    "serve": "node dist/index.js",
+    "prod": "npm run build && npm run serve",
+    "test": "jest"
+  },
+  "author": "Mark Fairhurst",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-express": "^2.0.4",
+    "babel-preset-env": "^1.7.0",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "file-system": "2.2.2",
+    "graphql": "^0.13.2",
+    "graphql-playground-middleware-express": "^1.7.2",
+    "graphql-tools": "^3.1.1",
+    "merge-graphql-schemas": "^1.5.3",
+    "path": "^0.12.7",
+    "rimraf": "^2.6.2",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^23.4.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-runtime": "^6.26.0",
+    "copyfiles": "^2.0.0",
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "jest": "^23.5.0",
+    "nodemon": "^1.18.3"
+  }
+}
