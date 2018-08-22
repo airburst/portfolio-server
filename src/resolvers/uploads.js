@@ -19,7 +19,7 @@ export default {
         // Image files only (jpg)
         if (mimetype !== 'image/jpeg') {
           console.error(`User tried to upload a file with mimetype: ${mimetype}`);
-          return false;
+          return { success: false, error: 'You cannot upload this type of file' };
         }
 
         // Upload the file
@@ -27,15 +27,16 @@ export default {
 
         // Process the file
         const { exif, error, files } = await processFile(filename);
-        console.log({ exif, error, files });
 
         if (filename) {
           console.info(`File ${filename} processed`);
         }
-        return true;
+        return {
+          success: true, exif: JSON.stringify(exif), error, files,
+        };
       } catch (err) {
         console.error(err.message);
-        return false;
+        return { success: false, error: err.message };
       }
     },
   },
