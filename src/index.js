@@ -25,23 +25,24 @@ const server = new ApolloServer({
   }),
 });
 
-const app = express();
 const graphqlEndpoint = '/graphql';
 const port = process.env.PORT || 3001;
+const app = express();
+const corsOptions = {
+  origin: ['http://localhost'],
+  credentials: true,
+};
 
-// Additional middleware can be mounted at this point to run before Apollo
-app.use(cors('http://localhost'), bodyParser.json({ limit: '4mb' }));
+app.use(bodyParser.json({ limit: '4mb' }));
 app.use('/playground', playground({ endpointUrl: graphqlEndpoint }));
-
-// Statically serve files and folders
 app.use('/uploads', express.static(path.join(__dirname, '../', UPLOAD_FOLDER)));
+app.use(cors(corsOptions));
 
 server.applyMiddleware({ app });
 
-// process.on('SIGINT', () => {
-//   server.close();
-//   process.exit(0);
-// });
+process.on('SIGINT', () => {
+  process.exit(0);
+});
 
 // Start the socket and graphQl servers
 app.listen({ port }, () => {
