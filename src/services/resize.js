@@ -56,7 +56,7 @@ const makeFolderName = (fileName) => {
 
 const makeRelativePath = (absolutePath) => {
   const abs = path.join(__dirname, '../..');
-  return absolutePath.replace(abs, process.env.SERVER_URI);
+  return absolutePath.replace(abs, `${process.env.SERVER_URI}:${process.env.PORT}`);
 };
 
 // eslint-disable-next-line import/prefer-default-export
