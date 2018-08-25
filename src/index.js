@@ -6,6 +6,7 @@ import cors from 'cors';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import playground from 'graphql-playground-middleware-express';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
+import database from './services/Database';
 import { version } from '../package.json';
 import { PHOTOS_FOLDER } from './constants';
 
@@ -34,9 +35,9 @@ const corsOptions = {
 };
 
 app.use(bodyParser.json({ limit: '4mb' }));
+app.use(cors(corsOptions));
 app.use('/playground', playground({ endpointUrl: graphqlEndpoint }));
 app.use('/photos', express.static(path.join(__dirname, '../', PHOTOS_FOLDER)));
-app.use(cors(corsOptions));
 
 server.applyMiddleware({ app });
 
@@ -45,6 +46,7 @@ process.on('SIGINT', () => {
 });
 
 // Start the socket and graphQl servers
-app.listen({ port }, () => {
+app.listen({ port }, async () => {
+  await database.start();
   console.info(`🚀 Portfolio API version ${version} ready`);
 });

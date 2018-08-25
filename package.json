@@ -16,6 +16,7 @@
   "dependencies": {
     "apollo-server-express": "^2.0.4",
     "babel-preset-env": "^1.7.0",
+    "bcrypt": "^3.0.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
@@ -28,7 +29,9 @@
     "merge-graphql-schemas": "^1.5.3",
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
+    "pg": "^7.4.3",
     "rimraf": "^2.6.2",
+    "sequelize": "^4.38.0",
     "sharp": "^0.20.7",
     "uuid": "^3.3.2"
   },
