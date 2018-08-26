@@ -5,7 +5,7 @@ export default `
     success: Boolean!
     exif: String
     error: String
-    files: [String!]
+    url: String
   }
 
   type Mutation {

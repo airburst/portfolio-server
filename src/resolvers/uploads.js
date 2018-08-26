@@ -11,7 +11,7 @@ const storeUpload = (stream, filePath) => new Promise((resolve, reject) =>
 
 export default {
   Mutation: {
-    uploadPhoto: async (parent, { file }, { environment }) => {
+    uploadPhoto: async (parent, { file }, { models }) => {
       try {
         const { stream, filename, mimetype } = await file;
         const storePath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
@@ -26,13 +26,13 @@ export default {
         await storeUpload(stream, storePath);
 
         // Process the file
-        const { exif, error, files } = await processFile(filename);
+        const { exif, error, url } = await processFile(filename);
 
-        if (filename) {
-          console.info(`File ${filename} processed`);
-        }
+        // Write to database
+
+        // TODO: schema for exif
         return {
-          success: true, exif: JSON.stringify(exif), error, files,
+          success: true, exif: JSON.stringify(exif), error, url,
         };
       } catch (err) {
         console.error(err.message);

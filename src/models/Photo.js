@@ -7,8 +7,8 @@ const Photo = sequelize.define('photos', {
     primaryKey: true,
     autoIncrement: true,
   },
-  urls: { // Array of urls
-    type: Sequelize.JSON,
+  url: {
+    type: Sequelize.STRING,
     allowNull: false,
   },
   title: Sequelize.STRING,

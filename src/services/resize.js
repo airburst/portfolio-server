@@ -3,21 +3,13 @@ import fs from 'file-system';
 import dotenv from 'dotenv';
 import mkdirp from 'mkdirp';
 import sharp from 'sharp';
-import { UPLOAD_FOLDER, PHOTOS_FOLDER } from '../constants';
+import {
+  UPLOAD_FOLDER, PHOTOS_FOLDER, SIZES, DELIM, THUMBNAIL_SIZE,
+} from '../constants';
 
 dotenv.config();
 
 const BASE_URL = path.join(__dirname, `../../${PHOTOS_FOLDER}`);
-const SIZES = [
-  2560,
-  1440,
-  1080,
-  720,
-  480,
-  { width: null, height: 200 },
-  { width: 150, height: 150 },
-];
-const DELIM = '__';
 
 // TODO: do not upsample the size of an image!
 // TODO: add unit test (file does not exist)
@@ -59,13 +51,19 @@ const makeRelativePath = (absolutePath) => {
   return absolutePath.replace(abs, `${process.env.SERVER_URI}:${process.env.PORT}`);
 };
 
+const getDimensions = (size) => {
+  if (!size || size === 'original') {
+    return '';
+  }
+  // Set filename with size and an 'h' for fixed-height crops and w for width
+  return size.height ? `-${size.height}h` : `-${size}w`;
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export const resize = filename => size => new Promise((resolve, reject) => {
   const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
   const ext = path.extname(filename);
-  // Set filename with size and an 'h' for fixed-height crops and w for width
-  const s = size.height ? `-${size.height}h` : `-${size}w`;
-  const outName = makeFolderName(`${filename.split(ext)[0]}${s}${ext}`);
+  const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
   try {
     writePath(outName, async () => {
       const outPath = path.join(outName);
@@ -80,7 +78,6 @@ export const resize = filename => size => new Promise((resolve, reject) => {
           .toFormat('jpeg')
           .toFile(outPath);
       }
-
       // Convert file paths to relative server paths
       resolve(makeRelativePath(outPath));
     });
@@ -89,8 +86,14 @@ export const resize = filename => size => new Promise((resolve, reject) => {
   }
 });
 
-export const resizeImage = filename =>
-  Promise.all(SIZES.map(resize(filename)));
+export const resizeImage = async (filename) => {
+  try {
+    const urls = await Promise.all(SIZES.map(resize(filename)));
+    return { url: urls[THUMBNAIL_SIZE], error: null };
+  } catch (err) {
+    return { url: null, error: err };
+  }
+};
 
 /* Use like:
 <img srcset="elva-fairy-320w.jpg 320w,
