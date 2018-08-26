@@ -10,7 +10,7 @@ class Database {
   start() {
     return new Promise(async (resolve) => {
       try {
-        await sequelize.sync();
+        await sequelize.sync({ force: true });
         resolve();
       } catch (err) {
         console.error(`Database start FAIL: ${err.message}`);
@@ -29,10 +29,11 @@ class Database {
       const result = await User.create({
         username, email, password: createHash(password), isAdmin,
       });
-      return result && result.dataValues.id;
+      const { id } = result.dataValues;
+      return { id, errors: [] };
     } catch (err) {
-      console.error(`Database:addUser FAIL (${username},${email}): ${err.message}`);
-      return null;
+      console.error(`Database:addUser FAIL (${username},${email}): ${err.errors}`);
+      return { id: null, errors: err.errors };
     }
   }
 
@@ -41,25 +42,31 @@ class Database {
   // Delete user
 
   // Get all photos for user
-  async getEntityData(type) {
+  async getPhotos(userId) {
+    if (!userId) { return []; }
     try {
-      const result = await Extract.findAll({
-        attributes: ['mex_data'],
-        where: {
-          mex_parent_table: {
-            [Op.eq]: type,
-          },
-        },
+      const result = await Photo.findAll({
+        attributes: ['url'],
+        where: { user_id: { [Op.eq]: userId } },
       });
       if (!result) { return []; }
       return result.map(r => r.dataValues).map(r => Object.values(r)[0]);
     } catch (err) {
-      console.error(`Database:getEntityData FAIL (${type}): ${err.message}`);
+      console.error(`Database:getPhotos FAIL (userId=${userId}): ${err.message}`);
       return [];
     }
   }
 
   // Add a photo
+  async addPhoto(photoObject) {
+    try {
+      const result = await Photo.create(photoObject);
+      return result && result.dataValues.id;
+    } catch (err) {
+      console.error(`Database:addPhoto FAIL (${photoObject}): ${err.message}`);
+      return null;
+    }
+  }
 
   // Update a photo
 
