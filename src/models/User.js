@@ -1,6 +1,10 @@
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
-import sequelize from '../Sequelize';
+import sequelize from './sequelize';
+import { SALT_ROUNDS } from '../constants';
+
+// export const compareHash = (password, hashed) => bcrypt.compareSync(password, hashed);
 
 dotenv.config();
 
@@ -31,5 +35,11 @@ const User = sequelize.define('users', {
   },
   blocked: Sequelize.BOOLEAN,
 });
+
+// Hash password before committing to db
+User.beforeCreate((u) => {
+  u.password = bcrypt.hashSync(u.password, SALT_ROUNDS);
+});
+
 
 export default User;

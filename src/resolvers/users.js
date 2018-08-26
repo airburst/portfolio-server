@@ -1,31 +1,31 @@
-import database from '../services/Database';
-import { createHash } from '../services/auth';
-
 export default {
   Mutation: {
     addUser: async (parent, {
       username, email, password, isAdmin = false,
-    }, ctx) => {
+    }, { models }) => {
       // Authorisation
       // if (!ctx.session) {
       //   return Error('You are not authorised to do this.');
       // }
 
       // Validation
-      // Mandatory fields
       if (!username || !email || !password) {
         return {
           id: null,
           errors: [{ type: 'validation', message: 'Mandatory information not supplied' }],
         };
       }
-      // Unique username and email
-      // TODO:
-
-      // Continue with write
-      return database.addUser({
-        username, email, password: createHash(password), isAdmin,
+      return models.User.create({
+        username, email, password, isAdmin,
       });
     },
   },
 };
+
+// getPhotos
+// const result = await Photo.findAll({
+//   attributes: ['url'],
+//   where: { user_id: { [Op.eq]: userId } },
+// });
+// if (!result) { return []; }
+// return result.map(r => r.dataValues).map(r => Object.values(r)[0]);

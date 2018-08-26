@@ -6,12 +6,14 @@ import cors from 'cors';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import playground from 'graphql-playground-middleware-express';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
-import database from './services/Database';
+import models from './models';
+import seed from './models/seed';
 import { version } from '../package.json';
 import { PHOTOS_FOLDER } from './constants';
 
 dotenv.config();
 
+const clearAndSeedDb = process.env.NODE_ENV === 'development';
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 const schema = makeExecutableSchema({
@@ -22,6 +24,7 @@ const schema = makeExecutableSchema({
 const server = new ApolloServer({
   schema,
   context: ({ req }) => ({
+    models,
     cookie: req.headers['x-cookie'],
   }),
 });
@@ -47,6 +50,7 @@ process.on('SIGINT', () => {
 
 // Start the socket and graphQl servers
 app.listen({ port }, async () => {
-  await database.start();
+  await models.initialise({ force: clearAndSeedDb });
+  if (clearAndSeedDb) { await seed(); }
   console.info(`🚀 Portfolio API version ${version} ready`);
 });
