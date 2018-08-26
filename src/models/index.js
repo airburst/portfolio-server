@@ -12,5 +12,5 @@ User.hasMany(Photo);
 export default {
   User,
   Photo,
-  initialise: opts => sequelize.sync(opts),
+  sequelize,
 };

@@ -1,24 +1,21 @@
+import formatErrors from '../formatErrors';
+
 export default {
   Mutation: {
-    addUser: async (parent, {
-      username, email, password, isAdmin = false,
-    }, { models }) => {
-      // Authorisation
-      // if (!ctx.session) {
-      //   return Error('You are not authorised to do this.');
-      // }
+    addUser: (parent, args, { models }) =>
+    // Authorisation
+    // if (!ctx.session) {
+    //   return Error('You are not authorised to do this.');
+    // }
 
-      // Validation
-      if (!username || !email || !password) {
-        return {
-          id: null,
-          errors: [{ type: 'validation', message: 'Mandatory information not supplied' }],
-        };
-      }
-      return models.User.create({
-        username, email, password, isAdmin,
-      });
-    },
+      // try {
+      models.User.create(args)
+        .then(result => ({ id: result.id, errors: null }))
+        .catch(err => ({ id: null, errors: formatErrors(err, models) }))
+    // } catch (e) {
+    //   return { id: -2, errors: formatErrors(e, models) };
+    // }
+    ,
   },
 };
 

@@ -50,7 +50,7 @@ process.on('SIGINT', () => {
 
 // Start the socket and graphQl servers
 app.listen({ port }, async () => {
-  await models.initialise({ force: clearAndSeedDb });
+  await models.sequelize.sync({ force: clearAndSeedDb });
   if (clearAndSeedDb) { await seed(); }
   console.info(`🚀 Portfolio API version ${version} ready`);
 });

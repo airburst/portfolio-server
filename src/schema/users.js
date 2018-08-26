@@ -1,12 +1,13 @@
 export default `
   type DatabaseError {
+    path: String
     message: String
     type: String
   }
 
   type createRecordResponse {
     id: Int
-    errors: [DatabaseError]
+    errors: [DatabaseError!]
   }
 
   type Mutation {
