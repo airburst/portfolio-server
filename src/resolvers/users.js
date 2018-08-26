@@ -8,14 +8,9 @@ export default {
     //   return Error('You are not authorised to do this.');
     // }
 
-      // try {
       models.User.create(args)
         .then(result => ({ id: result.id, errors: null }))
-        .catch(err => ({ id: null, errors: formatErrors(err, models) }))
-    // } catch (e) {
-    //   return { id: -2, errors: formatErrors(e, models) };
-    // }
-    ,
+        .catch(err => ({ id: null, errors: formatErrors(err, models) })),
   },
 };
 
