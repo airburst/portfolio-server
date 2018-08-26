@@ -25,6 +25,12 @@ const Photo = sequelize.define('photos', {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  exposure: Sequelize.INTEGER,
+  shutter: Sequelize.INTEGER,
+  aperture: Sequelize.INTEGER,
+  iso: Sequelize.INTEGER,
+  focalLength: Sequelize.INTEGER,
+  dateTaken: Sequelize.DATE,
   isPublic: {
     type: Sequelize.BOOLEAN,
     allowNull: false,

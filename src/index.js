@@ -33,8 +33,7 @@ const graphqlEndpoint = '/graphql';
 const port = process.env.PORT || 3001;
 const app = express();
 const corsOptions = {
-  origin: ['http://localhost'],
-  credentials: true,
+  origin: '*',
 };
 
 app.use(bodyParser.json({ limit: '4mb' }));

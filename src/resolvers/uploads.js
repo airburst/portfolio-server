@@ -1,6 +1,7 @@
 import { createWriteStream } from 'file-system';
 import path from 'path';
 import processFile from '../services/processFile';
+import formatErrors from '../formatErrors';
 import { UPLOAD_FOLDER } from '../constants';
 
 const storeUpload = (stream, filePath) => new Promise((resolve, reject) =>
@@ -11,6 +12,7 @@ const storeUpload = (stream, filePath) => new Promise((resolve, reject) =>
 
 export default {
   Mutation: {
+    // TODO: pass user context
     uploadPhoto: async (parent, { file }, { models }) => {
       try {
         const { stream, filename, mimetype } = await file;
@@ -31,14 +33,18 @@ export default {
         } = await processFile(filename);
 
         // Write to database
+        // TODO: use user id from context
+        const photoData = {
+          ...exif, urls, thumbnail, userId: 1,
+        };
+        await models.Photo.create(photoData);
 
-        // TODO: schema for exif
         return {
           success: true, exif: JSON.stringify(exif), error, urls, thumbnail,
         };
       } catch (err) {
         console.error(err.message);
-        return { success: false, error: err.message };
+        return { success: false, error: formatErrors(err, models) };
       }
     },
   },
