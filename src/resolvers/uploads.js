@@ -26,13 +26,15 @@ export default {
         await storeUpload(stream, storePath);
 
         // Process the file
-        const { exif, error, url } = await processFile(filename);
+        const {
+          exif, error, urls, thumbnail,
+        } = await processFile(filename);
 
         // Write to database
 
         // TODO: schema for exif
         return {
-          success: true, exif: JSON.stringify(exif), error, url,
+          success: true, exif: JSON.stringify(exif), error, urls, thumbnail,
         };
       } catch (err) {
         console.error(err.message);

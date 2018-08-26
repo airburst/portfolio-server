@@ -11,9 +11,6 @@ dotenv.config();
 
 const BASE_URL = path.join(__dirname, `../../${PHOTOS_FOLDER}`);
 
-// TODO: do not upsample the size of an image!
-// TODO: add unit test (file does not exist)
-
 // Write any missing folders in a file path
 const writePath = (filePath, cb) => {
   mkdirp(path.dirname(filePath), (err) => {
@@ -59,37 +56,48 @@ const getDimensions = (size) => {
   return size.height ? `-${size.height}h` : `-${size}w`;
 };
 
+const imageIsTooSmall = (actualWidth, resizeTo) => {
+  if (resizeTo === 'original') { return false; }
+  const resizeWidth = resizeTo.width ? resizeTo.width : resizeTo;
+  return (actualWidth < resizeWidth);
+};
+
 // eslint-disable-next-line import/prefer-default-export
-export const resize = filename => size => new Promise((resolve, reject) => {
-  const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
-  const ext = path.extname(filename);
-  const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
-  try {
-    writePath(outName, async () => {
-      const outPath = path.join(outName);
-      if (typeof size === 'number') {
-        await sharp(inPath)
-          .resize(size)
-          .toFormat('jpeg')
-          .toFile(outPath);
-      } else {
-        await sharp(inPath)
-          .resize(size.width, size.height)
-          .toFormat('jpeg')
-          .toFile(outPath);
-      }
-      // Convert file paths to relative server paths
-      resolve(makeRelativePath(outPath));
-    });
-  } catch (e) {
-    reject(e);
+export const resize = (filename, exif) => size => new Promise((resolve, reject) => {
+  if (imageIsTooSmall(exif.width, size)) {
+    resolve(null); // Don't upsample!
+  } else {
+    const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
+    const ext = path.extname(filename);
+    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
+    try {
+      writePath(outName, async () => {
+        const outPath = path.join(outName);
+        if (typeof size === 'number') {
+          await sharp(inPath)
+            .resize(size)
+            .toFormat('jpeg')
+            .toFile(outPath);
+        } else {
+          await sharp(inPath)
+            .resize(size.width, size.height)
+            .toFormat('jpeg')
+            .toFile(outPath);
+        }
+        // Convert file paths to relative server paths
+        resolve(makeRelativePath(outPath));
+      });
+    } catch (e) {
+      console.log('resize error:', e.message);
+      reject(e);
+    }
   }
 });
 
-export const resizeImage = async (filename) => {
+export const resizeImage = async (filename, exif) => {
   try {
-    const urls = await Promise.all(SIZES.map(resize(filename)));
-    return { url: urls[THUMBNAIL_SIZE], error: null };
+    const urls = await Promise.all(SIZES.map(resize(filename, exif)));
+    return { urls, thumbnail: urls[THUMBNAIL_SIZE], error: null };
   } catch (err) {
     return { url: null, error: err };
   }

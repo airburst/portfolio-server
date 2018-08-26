@@ -1,6 +1,10 @@
 export const UPLOAD_FOLDER = 'uploads';
 export const PHOTOS_FOLDER = 'photos';
 export const SALT_ROUNDS = 10;
+
+// Responsive resizing
+// Number = width
+// Object = { width, height }
 export const SIZES = [
   'original',
   2560,
