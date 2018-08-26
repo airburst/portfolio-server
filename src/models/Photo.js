@@ -7,12 +7,24 @@ const Photo = sequelize.define('photos', {
     primaryKey: true,
     autoIncrement: true,
   },
-  url: {
+  urls: {
+    type: Sequelize.JSON,
+    allowNull: false,
+  },
+  thumbnail: {
     type: Sequelize.STRING,
     allowNull: false,
   },
   title: Sequelize.STRING,
   caption: Sequelize.STRING,
+  width: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  height: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
   isPublic: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
