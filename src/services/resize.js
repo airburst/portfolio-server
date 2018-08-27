@@ -53,7 +53,9 @@ const getDimensions = (size) => {
     return '';
   }
   // Set filename with size and an 'h' for fixed-height crops and w for width
-  return size.height ? `-${size.height}h` : `-${size}w`;
+  if (size.height) { return `-${size.height}h`; }
+  if (size.width) { return `-${size.width}w`; }
+  return `-${size}w`;
 };
 
 const imageIsTooSmall = (actualWidth, resizeTo) => {
@@ -62,35 +64,44 @@ const imageIsTooSmall = (actualWidth, resizeTo) => {
   return (actualWidth < resizeWidth);
 };
 
+// Return a size object oriented to resize the longest edge
+const longestEdge = ({ width, height }, resizeTo) =>
+  // const aspect = width / height;
+  ((width >= height)
+    ? { width: resizeTo, height: null }
+    : { width: null, height: resizeTo });
+
 // eslint-disable-next-line import/prefer-default-export
 export const resize = (filename, exif) => size => new Promise((resolve, reject) => {
   if (imageIsTooSmall(exif.width, size)) {
     resolve(null); // Don't upsample!
-  } else {
-    const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
-    const ext = path.extname(filename);
-    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
-    try {
-      writePath(outName, async () => {
-        const outPath = path.join(outName);
-        if (typeof size === 'number') {
-          await sharp(inPath)
-            .resize(size)
-            .toFormat('jpeg')
-            .toFile(outPath);
-        } else {
-          await sharp(inPath)
-            .resize(size.width, size.height)
-            .toFormat('jpeg')
-            .toFile(outPath);
-        }
-        // Convert file paths to relative server paths
-        resolve(makeRelativePath(outPath));
-      });
-    } catch (e) {
-      console.log('resize error:', e.message);
-      reject(e);
-    }
+  }
+  if (size.longestEdge) {
+    size = longestEdge(exif, size.longestEdge); // Resize to correct orientation
+  }
+  const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
+  const ext = path.extname(filename);
+  const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
+  try {
+    writePath(outName, async () => {
+      const outPath = path.join(outName);
+      if (typeof size === 'number') {
+        await sharp(inPath)
+          .resize(size)
+          .toFormat('jpeg')
+          .toFile(outPath);
+      } else {
+        await sharp(inPath)
+          .resize(size.width, size.height)
+          .toFormat('jpeg')
+          .toFile(outPath);
+      }
+      // Convert file paths to relative server paths
+      resolve(makeRelativePath(outPath));
+    });
+  } catch (e) {
+    console.log('resize error:', e.message);
+    reject(e);
   }
 });
 
