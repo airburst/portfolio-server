@@ -16,20 +16,22 @@ const storeUpload = (stream, filePath) => new Promise((resolve, reject) =>
 
 const PhotosResolver = {
   Query: {
-    allPhotos: (parent, args, { models, userId = 1 }) =>
+    allPhotos: (parent, { orderBy }, { models, userId = 1 }) => {
     // Authorisation
     // if (!ctx.session) {
     //   return Error('You are not authorised to do this.');
     // }
-      models.Photo.findAll({
+      const order = orderBy ? orderBy.split('_') : ['id', 'DESC'];
+      return models.Photo.findAll({
         where: { userId: { [Op.eq]: userId } },
+        order: [order],
       })
         .then(result => ({
           data: result.map(r => r.dataValues),
           errors: null,
         }))
-        .catch(err => ({ data: [], errors: formatErrors(err, models) }))
-    ,
+        .catch(err => ({ data: [], errors: formatErrors(err, models) }));
+    },
   },
 
   Mutation: {

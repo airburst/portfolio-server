@@ -1,6 +1,17 @@
 export default `
   scalar Upload
 
+  enum PhotoOrderByInput {
+    id_ASC
+    id_DESC
+    title_ASC
+    title_DESC
+    dateTaken_ASC
+    dateTaken_DESC
+    createdAt_ASC
+    createdAt_DESC
+  }
+
   type UploadResponse {
     success: Boolean!
     exif: String
@@ -32,7 +43,7 @@ export default `
   }
 
   type Query {
-    allPhotos: PhotoResponse!
+    allPhotos(orderBy: PhotoOrderByInput): PhotoResponse!
   }
 
   type Mutation {
