@@ -1,4 +1,13 @@
 export default `
+  scalar Upload
+
+  type UploadResponse {
+    success: Boolean!
+    exif: String
+    error: String
+    thumbnail: String
+  }
+
   type Photo {
     id: Int!
     urls: [String]!
@@ -24,5 +33,10 @@ export default `
 
   type Query {
     allPhotos: PhotoResponse!
+  }
+
+  type Mutation {
+    uploadPhoto(file: Upload!): UploadResponse!
+    uploadPhotos(files: [Upload!]!): [UploadResponse!]!
   }
 `;
