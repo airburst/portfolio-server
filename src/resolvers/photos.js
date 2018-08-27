@@ -1,6 +1,7 @@
 import path from 'path';
-import { createWriteStream } from 'file-system';
+import { createWriteStream, statSync } from 'file-system';
 import Sequelize from 'sequelize';
+import progressStream from 'progress-stream';
 import formatErrors from '../formatErrors';
 import processFile from '../services/processFile';
 import batch from '../services/batch';
@@ -8,11 +9,14 @@ import { UPLOAD_FOLDER } from '../constants';
 
 const { Op } = Sequelize;
 
-const storeUpload = (stream, filePath) => new Promise((resolve, reject) =>
+const storeUpload = (stream, filePath, progress) => new Promise((resolve, reject) =>
   stream
+    .pipe(progress)
     .pipe(createWriteStream(filePath))
     .on('finish', () => resolve())
     .on('error', err => reject(err)));
+
+const emitProgress = progress => console.log(progress.percentage); // TODO: subscription
 
 const PhotosResolver = {
   Query: {
@@ -47,8 +51,10 @@ const PhotosResolver = {
           return { success: false, error: 'You cannot upload this type of file' };
         }
 
-        // Upload the file
-        await storeUpload(stream, storePath);
+        // Upload the file with progress
+        const stat = statSync(storePath);
+        const progress = progressStream({ length: stat.size, time: 10 }, emitProgress);
+        await storeUpload(stream, storePath, progress);
 
         // Process the file
         const {
