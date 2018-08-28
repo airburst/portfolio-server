@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 
 export const createTokens = async (user, secret, secret2) => {
-  console.log('TCL: exportcreateTokens -> user', user);
   const {
     id, username, isAdmin, ...rest
   } = user;
