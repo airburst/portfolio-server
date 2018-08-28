@@ -39,7 +39,7 @@ export default `
 
   type PhotoResponse {
     data: [Photo!]
-    errors: [DatabaseError!]
+    errors: [Error!]
   }
 
   type Query {

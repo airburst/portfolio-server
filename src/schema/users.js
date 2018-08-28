@@ -1,5 +1,5 @@
 export default `
-  type DatabaseError {
+  type Error {
     path: String
     message: String
     type: String
@@ -7,10 +7,18 @@ export default `
 
   type createRecordResponse {
     id: Int
-    errors: [DatabaseError!]
+    errors: [Error!]
+  }
+
+  type LoginResponse {
+    ok: Boolean!
+    token: String
+    refreshToken: String
+    errors: [Error!]
   }
 
   type Mutation {
     addUser(username: String!, email: String!, password: String!, isAdmin: Boolean): createRecordResponse!
+    login(username: String!, password: String!): LoginResponse!
   }
 `;

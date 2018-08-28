@@ -8,6 +8,8 @@ import { SALT_ROUNDS } from '../constants';
 
 dotenv.config();
 
+const { Op } = Sequelize;
+
 const User = sequelize.define('users', {
   id: {
     type: Sequelize.INTEGER,
@@ -40,6 +42,5 @@ const User = sequelize.define('users', {
 User.beforeCreate((u) => {
   u.password = bcrypt.hashSync(u.password, SALT_ROUNDS);
 });
-
 
 export default User;

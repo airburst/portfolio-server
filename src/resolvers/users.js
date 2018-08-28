@@ -1,7 +1,11 @@
+import { tryLogin } from '../services/auth';
 import formatErrors from '../formatErrors';
+import requiresAuth from '../services/permissions';
 
 export default {
   Mutation: {
+    login: (parent, { username, password }, { models, SECRET, SECRET2 }) =>
+      tryLogin(username, password, models, SECRET, SECRET2),
     addUser: (parent, args, { models }) =>
     // Authorisation
     // if (!ctx.session) {
@@ -13,11 +17,3 @@ export default {
         .catch(err => ({ id: null, errors: formatErrors(err, models) })),
   },
 };
-
-// getPhotos
-// const result = await Photo.findAll({
-//   attributes: ['url'],
-//   where: { user_id: { [Op.eq]: userId } },
-// });
-// if (!result) { return []; }
-// return result.map(r => r.dataValues).map(r => Object.values(r)[0]);
