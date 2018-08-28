@@ -48,6 +48,6 @@ export default `
 
   type Mutation {
     uploadPhoto(file: Upload!): UploadResponse!
-    uploadPhotos(files: [Upload!]!): [UploadResponse!]!
+    uploadPhotos(files: [Upload!]!, sizes: [Int!]): [UploadResponse!]!
   }
 `;

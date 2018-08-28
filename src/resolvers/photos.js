@@ -1,22 +1,10 @@
-import path from 'path';
-import { createWriteStream, statSync } from 'file-system';
 import Sequelize from 'sequelize';
-import progressStream from 'progress-stream';
+import { storeUpload, setProgress } from '../services/file';
 import formatErrors from '../formatErrors';
 import processFile from '../services/processFile';
 import batch from '../services/batch';
-import { UPLOAD_FOLDER } from '../constants';
 
 const { Op } = Sequelize;
-
-const storeUpload = (stream, filePath, progress) => new Promise((resolve, reject) =>
-  stream
-    .pipe(progress)
-    .pipe(createWriteStream(filePath))
-    .on('finish', () => resolve())
-    .on('error', err => reject(err)));
-
-const emitProgress = progress => console.log(progress.percentage); // TODO: subscription
 
 const PhotosResolver = {
   Query: {
@@ -40,10 +28,9 @@ const PhotosResolver = {
 
   Mutation: {
     // TODO: pass user context
-    uploadPhoto: async (parent, { file }, { models }) => {
+    uploadPhoto: async (parent, { file }, { models, progress }) => {
       try {
         const { stream, filename, mimetype } = await file;
-        const storePath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
 
         // Image files only (jpg)
         if (mimetype !== 'image/jpeg') {
@@ -51,10 +38,7 @@ const PhotosResolver = {
           return { success: false, error: 'You cannot upload this type of file' };
         }
 
-        // Upload the file with progress
-        const stat = statSync(storePath);
-        const progress = progressStream({ length: stat.size, time: 10 }, emitProgress);
-        await storeUpload(stream, storePath, progress);
+        await storeUpload(stream, filename, progress);
 
         // Process the file
         const {
@@ -76,12 +60,17 @@ const PhotosResolver = {
         return { success: false, error: formatErrors(err, models) };
       }
     },
-    uploadPhotos: async (parent, { files }, context) =>
-      batch()(
+    uploadPhotos: async (parent, { files, sizes = [] }, ctx) => {
+      const totalUploadSize = sizes.reduce((a, b) => a + b, 0);
+      const progress = setProgress(totalUploadSize);
+      const context = { ...ctx, progress };
+
+      return batch()(
         files,
         PhotosResolver.Mutation.uploadPhoto,
         { parent, argName: 'file', context },
-      ),
+      );
+    },
   },
 };
 

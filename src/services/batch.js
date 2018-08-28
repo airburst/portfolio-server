@@ -16,7 +16,7 @@ const limitConcurrency = (con) => {
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export default concurrency =>
-  async (records, resolver, params) => {
+  async (records, resolver, params, sizes = []) => {
     const queue = new TaskQueue(limitConcurrency(concurrency));
     const batchResults = [];
     let result;
@@ -30,12 +30,13 @@ export default concurrency =>
         if (completed === records.length) { resolve(batchResults); }
       };
 
-      records.forEach((record) => {
+      records.forEach((record, i) => {
         const task = async () => {
           try {
             // Resolver signature is (parent, args, context)
             const { parent, argName, context } = params;
-            const args = { [argName]: record };
+            const size = sizes ? sizes[i] : null; // Upload size for photos
+            const args = { [argName]: record, size };
             result = await resolver(parent, args, context);
             if (result) { batchResults.push(result); }
             increment();
