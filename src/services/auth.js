@@ -66,16 +66,7 @@ export const refreshTokens = async (token, refreshToken, models, SECRET, SECRET2
 };
 
 export const tryLogin = async (username, password, models, SECRET, SECRET2) => {
-  const user = await models.User.findOne({
-    where: {
-      [Op.or]: {
-        username: { [Op.eq]: username },
-        email: { [Op.eq]: username },
-      },
-    },
-    raw: true,
-  });
-  console.log('TCL: exporttryLogin -> user', user);
+  const user = await models.findByLogin(username);
   if (!user) {
     // user with provided email not found
     return {

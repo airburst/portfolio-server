@@ -43,4 +43,18 @@ User.beforeCreate((u) => {
   u.password = bcrypt.hashSync(u.password, SALT_ROUNDS);
 });
 
+export const findByLogin = async (login) => {
+  let user = await User.findOne({
+    where: { username: login },
+  });
+
+  if (!user) {
+    user = await User.findOne({
+      where: { email: login },
+    });
+  }
+
+  return user;
+};
+
 export default User;

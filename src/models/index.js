@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import sequelize from './sequelize';
-import User from './User';
+import User, { findByLogin } from './User';
 import Photo from './Photo';
 
 dotenv.config();
@@ -11,6 +11,7 @@ User.hasMany(Photo);
 
 export default {
   User,
+  findByLogin,
   Photo,
   sequelize,
 };
