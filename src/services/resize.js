@@ -107,8 +107,11 @@ export const resize = (filename, exif) => size => new Promise((resolve, reject) 
 
 export const resizeImage = async (filename, exif) => {
   try {
+    const name = path.basename(filename);
     const urls = await Promise.all(SIZES.map(resize(filename, exif)));
-    return { urls, thumbnail: urls[THUMBNAIL_SIZE], error: null };
+    return {
+      name, urls, thumbnail: urls[THUMBNAIL_SIZE], error: null,
+    };
   } catch (err) {
     return { url: null, error: err };
   }

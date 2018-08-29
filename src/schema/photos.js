@@ -21,6 +21,7 @@ export default `
 
   type Photo {
     id: Int!
+    name: String!
     urls: [String]!
     thumbnail: String!
     title: String
@@ -37,6 +38,14 @@ export default `
     createdAt: String!
   }
 
+  input PhotoInput {
+    id: Int!
+    name: String
+    title: String
+    caption: String
+    isPublic: Boolean
+  }
+
   type PhotoResponse {
     data: [Photo!]
     errors: [Error!]
@@ -49,5 +58,6 @@ export default `
   type Mutation {
     uploadPhoto(file: Upload!): UploadResponse!
     uploadPhotos(files: [Upload!]!, sizes: [Int!]): [UploadResponse!]!
+    updatePhoto(photo: PhotoInput!): Boolean!
   }
 `;

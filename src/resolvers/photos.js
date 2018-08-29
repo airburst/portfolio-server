@@ -24,7 +24,7 @@ const PhotosResolver = {
   },
 
   Mutation: {
-    uploadPhoto: requiresAuth.createResolver(async (parent, { file }, { models, progress }) => {
+    uploadPhoto: requiresAuth.createResolver(async (parent, { file }, { models, progress, user }) => {
       try {
         const { stream, filename, mimetype } = await file;
 
@@ -38,12 +38,12 @@ const PhotosResolver = {
 
         // Process the file
         const {
-          exif, error, urls, thumbnail,
+          exif, error, urls, thumbnail, name,
         } = await processFile(filename);
 
         // Write to database
         const photoData = {
-          ...exif, urls, thumbnail, userId: 1,
+          ...exif, urls, thumbnail, name, userId: user.id,
         };
         await models.Photo.create(photoData);
 
@@ -55,6 +55,7 @@ const PhotosResolver = {
         return { success: false, error: formatErrors(err, models) };
       }
     }),
+
     uploadPhotos: requiresAuth.createResolver(async (parent, { files, sizes = [] }, ctx) => {
       const totalUploadSize = sizes.reduce((a, b) => a + b, 0);
       const progress = setProgress(totalUploadSize);
@@ -65,6 +66,11 @@ const PhotosResolver = {
         PhotosResolver.Mutation.uploadPhoto,
         { parent, argName: 'file', context },
       );
+    }),
+
+    updatePhoto: requiresAuth.createResolver(async (parent, { photo }, { models }) => {
+      const { id, ...details } = photo;
+      return models.Photo.update(details, { where: { id } });
     }),
   },
 };
