@@ -3,6 +3,7 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import compression from 'compression';
 import jwt from 'jsonwebtoken';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import playground from 'graphql-playground-middleware-express';
@@ -15,8 +16,9 @@ import { PHOTOS_FOLDER } from './constants';
 
 dotenv.config();
 
-const SECRET = 'asiodfhoi1hoi23jnl1kejd';
-const SECRET2 = 'asiodfhoi1hoi23jnl1kejasdjlkfasdd';
+// eslint-disable-next-line prefer-destructuring
+const SECRET = process.env.SECRET;
+const SECRET2 = process.env.REFRESH_SECRET;
 const clearAndSeedDb = process.env.NODE_ENV === 'development';
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
@@ -51,6 +53,8 @@ const addUser = async (req, res, next) => {
     } catch (err) {
       const refreshToken = req.headers['x-refresh-token'];
       const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
+      console.log('TCL: -> user', newTokens);
+      console.log('TCL: -> newTokens', newTokens.user);
       if (newTokens.token && newTokens.refreshToken) {
         res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token');
         res.set('x-token', newTokens.token);
@@ -63,9 +67,9 @@ const addUser = async (req, res, next) => {
 };
 
 app.use(addUser);
-
 app.use(bodyParser.json({ limit: '4mb' }));
 app.use(cors(corsOptions));
+app.use(compression());
 app.use('/playground', playground({ endpointUrl: graphqlEndpoint }));
 app.use('/photos', express.static(path.join(__dirname, '../', PHOTOS_FOLDER)));
 
