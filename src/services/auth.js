@@ -8,7 +8,7 @@ export const createTokens = async (user, secret, secret2) => {
   const createToken = jwt.sign(
     { user: { id, username, isAdmin } },
     secret,
-    { expiresIn: 3600 }, // One hour
+    { expiresIn: '1h' }, // One hour
   );
   const createRefreshToken = jwt.sign(
     { user: { id } },
