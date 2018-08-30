@@ -7,15 +7,14 @@ export const createTokens = async (user, secret, secret2) => {
   } = user;
   const createToken = jwt.sign(
     { user: { id, username, isAdmin } },
-    secret, { expiresIn: '1h' },
+    secret,
+    { expiresIn: 3600 }, // One hour
   );
-
   const createRefreshToken = jwt.sign(
     { user: { id } },
     secret2,
-    { expiresIn: '7d' },
+    { expiresIn: 604800 }, // One week
   );
-
   return [createToken, createRefreshToken];
 };
 
@@ -30,14 +29,13 @@ export const refreshTokens = async (token, refreshToken, models, SECRET, SECRET2
   if (!userId) { return {}; }
 
   const user = await models.User.findOne({ where: { id: userId }, raw: true });
-
   if (!user) { return {}; }
 
   const refreshSecret = user.password + SECRET2;
-
   try {
     jwt.verify(refreshToken, refreshSecret);
   } catch (err) {
+    console.log('Unable to verify refreshToken');
     return {};
   }
 
@@ -52,7 +50,6 @@ export const refreshTokens = async (token, refreshToken, models, SECRET, SECRET2
 export const tryLogin = async (username, password, models, SECRET, SECRET2) => {
   const user = await models.findByLogin(username);
   if (!user) {
-    // user with provided email not found
     return {
       success: false,
       errors: [{ path: 'email', message: 'Wrong email' }],
@@ -67,9 +64,7 @@ export const tryLogin = async (username, password, models, SECRET, SECRET2) => {
       errors: [{ path: 'password', message: 'Wrong password' }],
     };
   }
-
   const refreshTokenSecret = user.password + SECRET2;
-
   const [token, refreshToken] = await createTokens(user, SECRET, refreshTokenSecret);
 
   return {
