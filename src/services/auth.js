@@ -52,7 +52,7 @@ export const tryLogin = async (username, password, models, SECRET, SECRET2) => {
   if (!user) {
     return {
       success: false,
-      errors: [{ path: 'email', message: 'Wrong email' }],
+      errors: [{ path: 'login', message: 'Wrong login details' }],
     };
   }
 
@@ -61,7 +61,7 @@ export const tryLogin = async (username, password, models, SECRET, SECRET2) => {
     // bad password
     return {
       success: false,
-      errors: [{ path: 'password', message: 'Wrong password' }],
+      errors: [{ path: 'login', message: 'Wrong login details' }],
     };
   }
   const refreshTokenSecret = user.password + SECRET2;

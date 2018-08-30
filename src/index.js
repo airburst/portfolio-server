@@ -40,9 +40,7 @@ const server = new ApolloServer({
 const graphqlEndpoint = '/graphql';
 const port = process.env.PORT || 3001;
 const app = express();
-const corsOptions = {
-  origin: '*',
-};
+const corsOptions = { origin: '*' };
 
 const addUser = async (req, res, next) => {
   const token = req.headers['x-token'];
