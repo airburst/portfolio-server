@@ -52,7 +52,9 @@ const addUser = async (req, res, next) => {
     } catch (err) {
       const refreshToken = req.headers['x-refresh-token'];
       const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
-      // console.log('TCL: token bad -> newTokens are', newTokens);
+
+      console.log('TCL: token bad -> newTokens are', newTokens);
+
       if (newTokens.token && newTokens.refreshToken) {
         res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token');
         res.set('x-token', newTokens.token);
@@ -83,3 +85,13 @@ app.listen({ port }, async () => {
   if (clearAndSeedDb) { await seed(); }
   console.info(`🚀 Portfolio API version ${version} ready`);
 });
+
+// try {
+//   const secret = '$2b$10$nNNKm9LdMj9731vI/c37kuFOn2cjxMJAOXlzFV5qICc./x8vaYM3OaiO1BEtxz0H0pnCHn4Tyg8ZRkEWHPFYx8V3LsjGe';
+
+//   const t = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNTM1NzM2MTQ4LCJleHAiOjE1MzYzNDA5NDh9.f8IOEZmqF7N7u78Obn6h6hU8mbqKbHcRGx-eCaFMp0E';
+
+//   console.log(jwt.verify(t, secret));
+// } catch (err) {
+//   console.log(err.message);
+// }

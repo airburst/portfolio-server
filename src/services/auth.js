@@ -5,16 +5,19 @@ export const createTokens = async (user, secret, secret2) => {
   const {
     id, username, isAdmin, ...rest
   } = user;
+
   const createToken = jwt.sign(
     { user: { id, username, isAdmin } },
     secret,
-    { expiresIn: '1h' }, // One hour
+    { expiresIn: '1d' },
   );
+
   const createRefreshToken = jwt.sign(
     { user: { id } },
     secret2,
-    { expiresIn: 604800 }, // One week
+    { expiresIn: '1w' },
   );
+
   return [createToken, createRefreshToken];
 };
 
@@ -32,8 +35,13 @@ export const refreshTokens = async (token, refreshToken, models, SECRET, SECRET2
   if (!user) { return {}; }
 
   const refreshSecret = user.password + SECRET2;
+
+  console.log('TCL: exportrefreshTokens -> refreshToken', refreshToken);
+  console.log('TCL: exportrefreshTokens -> refreshSecret', refreshSecret);
+  console.log('TCL: exportrefreshTokens -> user', user);
+
   try {
-    jwt.verify(refreshToken, refreshSecret);
+    jwt.verify(refreshToken, refreshSecret); // TODO: keeps failing here!
   } catch (err) {
     console.log('Unable to verify refreshToken');
     return {};
@@ -65,6 +73,7 @@ export const tryLogin = async (username, password, models, SECRET, SECRET2) => {
     };
   }
   const refreshTokenSecret = user.password + SECRET2;
+  console.log('TCL: exporttryLogin -> refreshTokenSecret', refreshTokenSecret);
   const [token, refreshToken] = await createTokens(user, SECRET, refreshTokenSecret);
 
   return {

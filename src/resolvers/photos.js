@@ -72,6 +72,12 @@ const PhotosResolver = {
       const { id, ...details } = photo;
       return models.Photo.update(details, { where: { id } });
     }),
+
+    deletePhoto: requiresAuth.createResolver(async (parent, { id }, { models }) => {
+      // await delete files
+      let deleteResult;
+      return models.Photo.destroy({ where: { id } });
+    }),
   },
 };
 

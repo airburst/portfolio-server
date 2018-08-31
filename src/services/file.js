@@ -24,3 +24,5 @@ export const storeUpload = (stream, filename, progress) =>
       .on('error', err => reject(err));
     // }
   });
+
+// TODO: delete file / folder

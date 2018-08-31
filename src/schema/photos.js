@@ -59,5 +59,6 @@ export default `
     uploadPhoto(file: Upload!): UploadResponse!
     uploadPhotos(files: [Upload!]!, sizes: [Int!]): [UploadResponse!]!
     updatePhoto(photo: PhotoInput!): Boolean!
+    deletePhoto(id: Int!): Boolean!
   }
 `;
