@@ -1,5 +1,7 @@
 import Sequelize from 'sequelize';
-import { storeUpload, setProgress } from '../services/file';
+import {
+  storeUpload, setProgress, cleanUploads, deletePhotoFiles,
+} from '../services/file';
 import requiresAuth from '../services/permissions';
 import formatErrors from '../formatErrors';
 import processFile from '../services/processFile';
@@ -47,6 +49,8 @@ const PhotosResolver = {
         };
         await models.Photo.create(photoData);
 
+        await cleanUploads();
+
         return {
           success: true, exif: JSON.stringify(exif), error, thumbnail,
         };
@@ -74,8 +78,9 @@ const PhotosResolver = {
     }),
 
     deletePhoto: requiresAuth.createResolver(async (parent, { id }, { models }) => {
-      // await delete files
-      let deleteResult;
+      const photo = await models.Photo.findOne({ where: { id } });
+      const files = photo.dataValues.urls;
+      await deletePhotoFiles(files);
       return models.Photo.destroy({ where: { id } });
     }),
   },
