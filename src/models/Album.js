@@ -1,0 +1,40 @@
+import Sequelize from 'sequelize';
+import sequelize from './sequelize';
+
+const Album = sequelize.define('albums', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  description: Sequelize.TEXT,
+  cover: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  isPublic: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+  views: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+}, {
+  indexes: [
+    {
+      name: 'i_album_name',
+      unique: true,
+      fields: ['name'],
+    },
+  ],
+});
+
+
+export default Album;
