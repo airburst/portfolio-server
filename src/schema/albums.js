@@ -9,6 +9,7 @@ export default `
   }
 
   input AlbumInput {
+    id: Int
     name: String
     cover: String
     isPublic: Boolean
@@ -26,5 +27,6 @@ export default `
 
   type Mutation {
     addAlbum(album: AlbumInput!): Boolean!
+    updateAlbum(album: AlbumInput!): Boolean!
   }
 `;

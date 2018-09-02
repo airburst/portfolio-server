@@ -43,7 +43,10 @@ const AlbumsResolver = {
       return models.Album.create({ ...details, userId });
     },
 
-    // updateAlbum()
+    updateAlbum: async (parent, { album }, { models, userId = 1 }) => {
+      const { id, ...details } = album;
+      return models.Album.update({ ...details, userId }, { where: { id } });
+    },
 
     // addPhotosToAlbum(albumId: Int!, photoIds: [Int!]!)
 
