@@ -45,7 +45,8 @@ export default async () => {
 
 
   // Remove a photo from the album without deleting it (e.g. for other albums)
-  await album.removePhoto(1);
+  // await album.removePhoto(1);
+  await album.removePhotos([1, 2]);
   const albumPhotos2 = await album.getPhotos();
   console.log('TCL: albumPhotos2', albumPhotos2.map(ap => ap.dataValues.title));
 
