@@ -20,6 +20,11 @@ export default `
     errors: [Error!]
   }
 
+  type AlbumUpdateResponse {
+    data: Boolean!
+    errors: [Error!]
+  }
+
   type Query {
     allAlbums: AlbumResponse!
     getPublicAlbums: AlbumResponse!
@@ -28,5 +33,7 @@ export default `
   type Mutation {
     addAlbum(album: AlbumInput!): Boolean!
     updateAlbum(album: AlbumInput!): Boolean!
+    addPhotosToAlbum(albumId: Int!, photoIds: [Int!]!): AlbumUpdateResponse!
+    removePhotosFromAlbum(albumId: Int!, photoIds: [Int!]!): AlbumUpdateResponse!
   }
 `;

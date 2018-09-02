@@ -43,16 +43,32 @@ const AlbumsResolver = {
       return models.Album.create({ ...details, userId });
     },
 
-    updateAlbum: async (parent, { album }, { models, userId = 1 }) => {
+    updateAlbum: async (parent, { album }, { models }) => {
       const { id, ...details } = album;
-      return models.Album.update({ ...details, userId }, { where: { id } });
+      return models.Album.update({ ...details }, { where: { id } });
     },
 
-    // addPhotosToAlbum(albumId: Int!, photoIds: [Int!]!)
+    addPhotosToAlbum: async (parent, { albumId, photoIds }, { models }) => {
+      try {
+        const album = await models.Album.findById(albumId);
+        if (!album) { return false; }
+        const result = album.addPhotos(photoIds);
+        return { data: result, errors: null };
+      } catch (err) {
+        return { data: false, errors: formatErrors(err, models) };
+      }
+    },
 
-    // removePhotosToAlbum(albumId: Int!, photoIds: [Int!]!)
-
-    // setCoverPhoto(albumId: Int!, cover: String!)
+    removePhotosFromAlbum: async (parent, { albumId, photoIds }, { models }) => {
+      try {
+        const album = await models.Album.findById(albumId);
+        if (!album) { return false; }
+        const result = album.removePhotos(photoIds);
+        return { data: result, errors: null };
+      } catch (err) {
+        return { data: false, errors: formatErrors(err, models) };
+      }
+    },
 
     // addView(albumId: Int!)
 
