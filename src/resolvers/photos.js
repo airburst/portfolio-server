@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 import {
-  storeUpload, setProgress, cleanUploads, deletePhotoFiles,
+  storeUpload, setProgress, cleanUpload, deletePhotoFiles,
 } from '../services/file';
 import requiresAuth from '../services/permissions';
 import formatErrors from '../formatErrors';
@@ -50,7 +50,7 @@ const PhotosResolver = {
           };
           await models.Photo.create(photoData);
 
-          await cleanUploads();
+          await cleanUpload(filename);
 
           return {
             success: true, exif: JSON.stringify(exif), error, thumbnail,

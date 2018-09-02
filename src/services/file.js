@@ -67,3 +67,5 @@ const deleteAllFiles = folder => new Promise((resolve) => {
 });
 
 export const cleanUploads = () => deleteAllFiles(UPLOAD_FOLDER);
+
+export const cleanUpload = filename => deleteFile(UPLOAD_FOLDER, filename);
