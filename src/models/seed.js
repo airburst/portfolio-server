@@ -17,6 +17,7 @@ export default async () => {
     title: 'New photo 1',
     width: 1800,
     height: 1200,
+    userId: 1,
   });
   await Photo.create({
     name: 'photo2',
@@ -25,10 +26,15 @@ export default async () => {
     title: 'New photo 2',
     width: 1800,
     height: 1200,
+    userId: 1,
   });
 
   // Create album
-  await Album.create({ name: 'General', cover: 'http://localhost:3000/photos/9/1/photo1.url' });
+  await Album.create({
+    name: 'General',
+    cover: 'http://localhost:3000/photos/9/1/photo1.url',
+    userId: 1,
+  });
 
   // Add photos to album
   const album = await Album.findById(1);
@@ -46,12 +52,12 @@ export default async () => {
 
   // Remove a photo from the album without deleting it (e.g. for other albums)
   // await album.removePhoto(1);
-  await album.removePhotos([1, 2]);
-  const albumPhotos2 = await album.getPhotos();
-  console.log('TCL: albumPhotos2', albumPhotos2.map(ap => ap.dataValues.title));
+  // await album.removePhotos([1, 2]);
+  // const albumPhotos2 = await album.getPhotos();
+  // console.log('TCL: albumPhotos2', albumPhotos2.map(ap => ap.dataValues.title));
 
   // Deleting an album removes all join table links
-  await Album.destroy({ where: { id: 1 } });
-  await Photo.destroy({ where: { id: 1 } });
-  await Photo.destroy({ where: { id: 2 } });
+  // await Album.destroy({ where: { id: 1 } });
+  // await Photo.destroy({ where: { id: 1 } });
+  // await Photo.destroy({ where: { id: 2 } });
 };
