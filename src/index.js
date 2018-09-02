@@ -16,7 +16,7 @@ import { PHOTOS_FOLDER } from './constants';
 
 dotenv.config();
 
-const clearAndSeedDb = true;
+const clearAndSeedDb = false;
 
 // eslint-disable-next-line prefer-destructuring
 const SECRET = process.env.SECRET;
