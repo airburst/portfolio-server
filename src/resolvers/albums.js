@@ -4,21 +4,22 @@ import formatErrors from '../formatErrors';
 
 const { Op } = Sequelize;
 
-// TODO: Remove userId = 1!
-
 const AlbumsResolver = {
   Query: {
-    allAlbums: (parent, args, { models, userId = 1 }) =>
-      models.Album.findAll({
-        where: { userId: { [Op.eq]: userId } },
-        include: [{ model: models.Photo, as: 'photos' }],
-      })
-        .then(result => ({
-          data: result.map(r => r.dataValues),
-          errors: null,
-        }))
-        .catch(err => ({ data: [], errors: formatErrors(err, models) })),
+    allAlbums: requiresAuth.createResolver(
+      (parent, args, { models, user }) =>
+        models.Album.findAll({
+          where: { userId: { [Op.eq]: user.id } },
+          include: [{ model: models.Photo, as: 'photos' }],
+        })
+          .then(result => ({
+            data: result.map(r => r.dataValues),
+            errors: null,
+          }))
+          .catch(err => ({ data: [], errors: formatErrors(err, models) })),
+    ),
 
+    // NOTE: Hard-coded user id
     getPublicAlbums: (parent, args, { models, userId = 1 }) =>
       models.Album.findAll({
         where: {
@@ -38,46 +39,60 @@ const AlbumsResolver = {
   },
 
   Mutation: {
-    addAlbum: async (parent, { album }, { models, userId = 1 }) => {
-      const { id, ...details } = album;
-      return models.Album.create({ ...details, userId });
-    },
+    addAlbum: requiresAuth.createResolver(
+      async (parent, { album }, { models, user }) => {
+        const { id, ...details } = album;
+        return models.Album.create({ ...details, userId: user.id });
+      },
+    ),
 
-    updateAlbum: async (parent, { album }, { models }) => {
-      const { id, ...details } = album;
-      return models.Album.update({ ...details }, { where: { id } });
-    },
+    updateAlbum: requiresAuth.createResolver(
+      async (parent, { album }, { models }) => {
+        const { id, ...details } = album;
+        return models.Album.update({ ...details }, { where: { id } });
+      },
+    ),
 
-    addPhotosToAlbum: async (parent, { albumId, photoIds }, { models }) => {
-      try {
+    addPhotosToAlbum: requiresAuth.createResolver(
+      async (parent, { albumId, photoIds }, { models }) => {
+        try {
+          const album = await models.Album.findById(albumId);
+          if (!album) { return false; }
+          const result = album.addPhotos(photoIds);
+          return { data: result, errors: null };
+        } catch (err) {
+          return { data: false, errors: formatErrors(err, models) };
+        }
+      },
+    ),
+
+    removePhotosFromAlbum: requiresAuth.createResolver(
+      async (parent, { albumId, photoIds }, { models }) => {
+        try {
+          const album = await models.Album.findById(albumId);
+          if (!album) { return false; }
+          const result = album.removePhotos(photoIds);
+          return { data: result, errors: null };
+        } catch (err) {
+          return { data: false, errors: formatErrors(err, models) };
+        }
+      },
+    ),
+
+
+    addView: requiresAuth.createResolver(
+      async (parent, { albumId }, { models }) => {
         const album = await models.Album.findById(albumId);
-        if (!album) { return false; }
-        const result = album.addPhotos(photoIds);
-        return { data: result, errors: null };
-      } catch (err) {
-        return { data: false, errors: formatErrors(err, models) };
-      }
-    },
+        let { views } = album.dataValues;
+        views += 1;
+        return album.update({ views });
+      },
+    ),
 
-    removePhotosFromAlbum: async (parent, { albumId, photoIds }, { models }) => {
-      try {
-        const album = await models.Album.findById(albumId);
-        if (!album) { return false; }
-        const result = album.removePhotos(photoIds);
-        return { data: result, errors: null };
-      } catch (err) {
-        return { data: false, errors: formatErrors(err, models) };
-      }
-    },
-
-    // addView(albumId: Int!)
-
-    // deleteAlbum: requiresAuth.createResolver(async (parent, { id }, { models }) => {
-    //   const Album = await models.Album.findOne({ where: { id } });
-    //   const files = Album.dataValues.urls;
-    //   await deleteAlbumFiles(files);
-    //   return models.Album.destroy({ where: { id } });
-    // }),
+    deleteAlbum: requiresAuth.createResolver(
+      async (parent, { albumId }, { models }) =>
+        models.Album.destroy({ where: { id: albumId } }),
+    ),
   },
 };
 

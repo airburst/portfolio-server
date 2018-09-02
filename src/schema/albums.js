@@ -3,6 +3,7 @@ export default `
     id: Int!
     name: String!
     cover: String!
+    views: Int!
     isPublic: Boolean!
     createdAt: String!
     photos: [Photo!]
@@ -35,5 +36,7 @@ export default `
     updateAlbum(album: AlbumInput!): Boolean!
     addPhotosToAlbum(albumId: Int!, photoIds: [Int!]!): AlbumUpdateResponse!
     removePhotosFromAlbum(albumId: Int!, photoIds: [Int!]!): AlbumUpdateResponse!
+    addView(albumId: Int!): Boolean!
+    deleteAlbum(albumId: Int!): Boolean!
   }
 `;

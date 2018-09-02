@@ -26,63 +26,71 @@ const PhotosResolver = {
   },
 
   Mutation: {
-    uploadPhoto: requiresAuth.createResolver(async (parent, { file }, { models, progress, user }) => {
-      try {
-        const { stream, filename, mimetype } = await file;
+    uploadPhoto: requiresAuth.createResolver(
+      async (parent, { file }, { models, progress, user }) => {
+        try {
+          const { stream, filename, mimetype } = await file;
 
-        // Image files only (jpg)
-        if (mimetype !== 'image/jpeg') {
-          console.error(`User tried to upload a file with mimetype: ${mimetype}`);
-          return { success: false, error: 'You cannot upload this type of file' };
+          // Image files only (jpg)
+          if (mimetype !== 'image/jpeg') {
+            console.error(`User tried to upload a file with mimetype: ${mimetype}`);
+            return { success: false, error: 'You cannot upload this type of file' };
+          }
+
+          await storeUpload(stream, filename, progress);
+
+          // Process the file
+          const {
+            exif, error, urls, thumbnail, name,
+          } = await processFile(filename);
+
+          // Write to database
+          const photoData = {
+            ...exif, urls, thumbnail, name, userId: user.id,
+          };
+          await models.Photo.create(photoData);
+
+          await cleanUploads();
+
+          return {
+            success: true, exif: JSON.stringify(exif), error, thumbnail,
+          };
+        } catch (err) {
+          console.error(err.message);
+          return { success: false, error: formatErrors(err, models) };
         }
+      },
+    ),
 
-        await storeUpload(stream, filename, progress);
+    uploadPhotos: requiresAuth.createResolver(
+      async (parent, { files, sizes = [] }, ctx) => {
+        const totalUploadSize = sizes.reduce((a, b) => a + b, 0);
+        const progress = setProgress(totalUploadSize);
+        const context = { ...ctx, progress };
 
-        // Process the file
-        const {
-          exif, error, urls, thumbnail, name,
-        } = await processFile(filename);
+        return batch()(
+          files,
+          PhotosResolver.Mutation.uploadPhoto,
+          { parent, argName: 'file', context },
+        );
+      },
+    ),
 
-        // Write to database
-        const photoData = {
-          ...exif, urls, thumbnail, name, userId: user.id,
-        };
-        await models.Photo.create(photoData);
+    updatePhoto: requiresAuth.createResolver(
+      async (parent, { photo }, { models }) => {
+        const { id, ...details } = photo;
+        return models.Photo.update(details, { where: { id } });
+      },
+    ),
 
-        await cleanUploads();
-
-        return {
-          success: true, exif: JSON.stringify(exif), error, thumbnail,
-        };
-      } catch (err) {
-        console.error(err.message);
-        return { success: false, error: formatErrors(err, models) };
-      }
-    }),
-
-    uploadPhotos: requiresAuth.createResolver(async (parent, { files, sizes = [] }, ctx) => {
-      const totalUploadSize = sizes.reduce((a, b) => a + b, 0);
-      const progress = setProgress(totalUploadSize);
-      const context = { ...ctx, progress };
-
-      return batch()(
-        files,
-        PhotosResolver.Mutation.uploadPhoto,
-        { parent, argName: 'file', context },
-      );
-    }),
-
-    updatePhoto: requiresAuth.createResolver(async (parent, { photo }, { models }) => {
-      const { id, ...details } = photo;
-      return models.Photo.update(details, { where: { id } });
-    }),
-
-    deletePhoto: requiresAuth.createResolver(async (parent, { id }, { models }) => {
-      const photo = await models.Photo.findOne({ where: { id } });
-      const files = photo.dataValues.urls;
-      await deletePhotoFiles(files);
-      return models.Photo.destroy({ where: { id } });
-    }),
+    deletePhoto: requiresAuth.createResolver(
+      async (parent, { id }, { models }) => {
+        const photo = await models.Photo.findOne({ where: { id } });
+        const files = photo.dataValues.urls;
+        await deletePhotoFiles(files);
+        return models.Photo.destroy({ where: { id } });
+      },
+    ),
   },
 };
 
