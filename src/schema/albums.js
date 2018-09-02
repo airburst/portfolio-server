@@ -17,6 +17,11 @@ export default `
   }
 
   type AlbumResponse {
+    data: Album
+    errors: [Error!]
+  }
+
+  type AlbumsResponse {
     data: [Album!]
     errors: [Error!]
   }
@@ -27,8 +32,9 @@ export default `
   }
 
   type Query {
-    allAlbums: AlbumResponse!
-    getPublicAlbums: AlbumResponse!
+    allAlbums: AlbumsResponse!
+    getPublicAlbums: AlbumsResponse!
+    getAlbum(albumId: Int!): AlbumResponse!
   }
 
   type Mutation {

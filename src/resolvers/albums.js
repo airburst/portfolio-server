@@ -36,6 +36,22 @@ const AlbumsResolver = {
         }))
         .catch(err => ({ data: [], errors: formatErrors(err, models) })),
 
+    getAlbum: (parent, { albumId }, { models }) =>
+      models.Album.findOne({
+        where: {
+          [Op.and]: {
+            id: { [Op.eq]: albumId },
+            isPublic: { [Op.eq]: true },
+          },
+        },
+        include: [{ model: models.Photo, as: 'photos' }],
+      })
+        .then(result => ({
+          data: result.dataValues,
+          errors: null,
+        }))
+        .catch(err => ({ data: null, errors: formatErrors(err, models) })),
+
   },
 
   Mutation: {
