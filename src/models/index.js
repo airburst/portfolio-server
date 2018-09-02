@@ -9,7 +9,7 @@ dotenv.config();
 // Associations
 Photo.belongsTo(User);
 Photo.belongsToMany(Album, { through: 'album_photos' });
-Album.belongsToMany(Photo, { through: 'album_photos' });
+Album.belongsToMany(Photo, { through: 'album_photos', onDelete: 'CASCADE' });
 /**
  * Provides the following accessor methods:
  * Album.getPhotos

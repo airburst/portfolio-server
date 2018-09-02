@@ -11,7 +11,6 @@ const Album = sequelize.define('albums', {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  description: Sequelize.TEXT,
   cover: {
     type: Sequelize.STRING,
     allowNull: false,
