@@ -51,7 +51,6 @@ const AlbumsResolver = {
           errors: null,
         }))
         .catch(err => ({ data: null, errors: formatErrors(err, models) })),
-
   },
 
   Mutation: {

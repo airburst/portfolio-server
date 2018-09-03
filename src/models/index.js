@@ -1,10 +1,7 @@
-import dotenv from 'dotenv';
 import sequelize from './sequelize';
 import User, { findByLogin } from './User';
 import Photo from './Photo';
 import Album from './Album';
-
-dotenv.config();
 
 // Associations
 Photo.belongsTo(User);
