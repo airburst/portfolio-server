@@ -2,7 +2,7 @@ export default `
   type Album {
     id: Int!
     name: String!
-    cover: String!
+    cover: String
     views: Int!
     isPublic: Boolean!
     createdAt: String!
