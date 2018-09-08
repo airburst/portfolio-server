@@ -32,7 +32,7 @@ export default `
   }
 
   type Query {
-    allAlbums: AlbumsResponse!
+    allAlbums(id: Int): AlbumsResponse!
     getPublicAlbums: AlbumsResponse!
     getAlbum(albumId: Int!): AlbumResponse!
   }

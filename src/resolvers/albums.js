@@ -7,16 +7,20 @@ const { Op } = Sequelize;
 const AlbumsResolver = {
   Query: {
     allAlbums: requiresAuth.createResolver(
-      (parent, args, { models, user }) =>
-        models.Album.findAll({
-          where: { userId: { [Op.eq]: user.id } },
+      (parent, { id }, { models, user }) => {
+        const filter = id
+          ? { [Op.and]: { userId: { [Op.eq]: user.id }, id: { [Op.eq]: id } } }
+          : { userId: { [Op.eq]: user.id } };
+        return models.Album.findAll({
+          where: filter,
           include: [{ model: models.Photo, as: 'photos' }],
         })
           .then(result => ({
             data: result.map(r => r.dataValues),
             errors: null,
           }))
-          .catch(err => ({ data: [], errors: formatErrors(err, models) })),
+          .catch(err => ({ data: [], errors: formatErrors(err, models) }));
+      },
     ),
 
     // NOTE: Hard-coded user id
