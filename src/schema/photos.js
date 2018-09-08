@@ -52,7 +52,7 @@ export default `
   }
 
   type Query {
-    allPhotos(orderBy: PhotoOrderByInput): PhotoResponse!
+    allPhotos(albumId: Int, orderBy: PhotoOrderByInput): PhotoResponse!
   }
 
   type Mutation {

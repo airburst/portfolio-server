@@ -11,10 +11,20 @@ const { Op } = Sequelize;
 
 const PhotosResolver = {
   Query: {
-    allPhotos: (parent, { orderBy }, { models, userId = 1 }) => {
+    allPhotos: (parent, { albumId, orderBy }, { models, userId = 1 }) => {
+      const filter = albumId
+        ? { [Op.and]: { userId: { [Op.eq]: userId }, '$albums.id$': { [Op.eq]: albumId } } }
+        : { userId: { [Op.eq]: userId } };
+      console.log('TCL: filter', filter);
       const order = orderBy ? orderBy.split('_') : ['id', 'DESC'];
+
       return models.Photo.findAll({
-        where: { userId: { [Op.eq]: userId } },
+        include: [{
+          model: models.Album,
+          attributes: ['id'],
+          through: 'album_photos',
+        }],
+        where: filter,
         order: [order],
       })
         .then(result => ({
