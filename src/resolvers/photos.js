@@ -15,7 +15,6 @@ const PhotosResolver = {
       const filter = albumId
         ? { [Op.and]: { userId: { [Op.eq]: userId }, '$albums.id$': { [Op.eq]: albumId } } }
         : { userId: { [Op.eq]: userId } };
-      console.log('TCL: filter', filter);
       const order = orderBy ? orderBy.split('_') : ['id', 'DESC'];
 
       return models.Photo.findAll({
