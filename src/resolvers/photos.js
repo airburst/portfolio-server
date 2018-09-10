@@ -13,8 +13,19 @@ const PhotosResolver = {
   Query: {
     allPhotos: (parent, { albumId, orderBy }, { models, userId = 1 }) => {
       const filter = albumId
-        ? { [Op.and]: { userId: { [Op.eq]: userId }, '$albums.id$': { [Op.eq]: albumId } } }
-        : { userId: { [Op.eq]: userId } };
+        ? {
+          [Op.and]: {
+            userId: { [Op.eq]: userId },
+            bin: { [Op.eq]: false },
+            '$albums.id$': { [Op.eq]: albumId },
+          },
+        }
+        : {
+          [Op.and]: {
+            userId: { [Op.eq]: userId },
+            bin: { [Op.eq]: false },
+          },
+        };
       const order = orderBy ? orderBy.split('_') : ['id', 'DESC'];
 
       return models.Photo.findAll({

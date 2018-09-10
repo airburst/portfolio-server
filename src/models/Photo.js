@@ -40,20 +40,25 @@ const Photo = sequelize.define('photos', {
     allowNull: false,
     defaultValue: true,
   },
+  bin: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+},
+{
+  indexes: [
+    {
+      name: 'i_photo_name',
+      unique: true,
+      fields: ['name'],
+    },
+    {
+      name: 'i_photo_title',
+      unique: true,
+      fields: ['title'],
+    },
+  ],
 });
-// {
-//   indexes: [
-//     {
-//       name: 'i_mex_name',
-//       unique: true,
-//       fields: ['mex_name'],
-//     },
-//     {
-//       name: 'i_mex_parent_rec_id',
-//       unique: true,
-//       fields: ['mex_parent_rec_id'],
-//     },
-//   ],
-// }
 
 export default Photo;

@@ -22,6 +22,11 @@ const Album = sequelize.define('albums', {
     allowNull: false,
     defaultValue: 0,
   },
+  bin: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 }, {
   indexes: [
     {

@@ -9,8 +9,19 @@ const AlbumsResolver = {
     allAlbums: requiresAuth.createResolver(
       (parent, { id }, { models, user }) => {
         const filter = id
-          ? { [Op.and]: { userId: { [Op.eq]: user.id }, id: { [Op.eq]: id } } }
-          : { userId: { [Op.eq]: user.id } };
+          ? {
+            [Op.and]: {
+              userId: { [Op.eq]: user.id },
+              bin: { [Op.eq]: false },
+              id: { [Op.eq]: id },
+            },
+          }
+          : {
+            [Op.and]: {
+              userId: { [Op.eq]: user.id },
+              bin: { [Op.eq]: false },
+            },
+          };
         return models.Album.findAll({
           where: filter,
           include: [{ model: models.Photo, as: 'photos' }],
@@ -30,6 +41,7 @@ const AlbumsResolver = {
           [Op.and]: {
             userId: { [Op.eq]: userId },
             isPublic: { [Op.eq]: true },
+            bin: { [Op.eq]: false },
           },
         },
         include: [{ model: models.Photo, as: 'photos' }],
@@ -46,6 +58,7 @@ const AlbumsResolver = {
           [Op.and]: {
             id: { [Op.eq]: albumId },
             isPublic: { [Op.eq]: true },
+            bin: { [Op.eq]: false },
           },
         },
         include: [{ model: models.Photo, as: 'photos' }],
