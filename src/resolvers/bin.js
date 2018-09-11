@@ -51,7 +51,7 @@ const BinResolver = {
       async (parent, { type, ids }, { models, user }) => {
         if (type === ALBUM) {
           try {
-            return models.Album.update({ bin: true }, {
+            const result = await models.Album.update({ bin: true }, {
               returning: true,
               where: {
                 [Op.and]: {
@@ -60,13 +60,14 @@ const BinResolver = {
                 },
               },
             });
+            return !!result;
           } catch (err) {
             return false;
           }
         }
         if (type === PHOTO) {
           try {
-            return models.Photo.update({ bin: true }, {
+            const result = await models.Photo.update({ bin: true }, {
               returning: true,
               where: {
                 [Op.and]: {
@@ -75,6 +76,7 @@ const BinResolver = {
                 },
               },
             });
+            return !!result;
           } catch (err) {
             return false;
           }
@@ -104,7 +106,7 @@ const BinResolver = {
               },
             },
           });
-          return restoreAlbums && restorePhotos;
+          return true;
         } catch (err) {
           return false;
         }

@@ -15,9 +15,4 @@ export default `
   }
 `;
 
-// type Mutation {
 //   emptyBin: Boolean!
-//   restoreAlbums(ids: [Int!]!): Boolean!
-//   restorePhotos(ids: [Int!]!): Boolean!
-//   restoreAll: Boolean!
-// }

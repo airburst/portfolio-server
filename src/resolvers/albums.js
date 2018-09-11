@@ -74,14 +74,14 @@ const AlbumsResolver = {
     addAlbum: requiresAuth.createResolver(
       async (parent, { album }, { models, user }) => {
         const { id, ...details } = album;
-        return models.Album.create({ ...details, userId: user.id });
+        return !!models.Album.create({ ...details, userId: user.id });
       },
     ),
 
     updateAlbum: requiresAuth.createResolver(
       async (parent, { album }, { models }) => {
         const { id, ...details } = album;
-        return models.Album.update({ ...details }, { where: { id } });
+        return !!models.Album.update({ ...details }, { where: { id } });
       },
     ),
 
@@ -90,8 +90,8 @@ const AlbumsResolver = {
         try {
           const album = await models.Album.findById(albumId);
           if (!album) { return false; }
-          const result = album.addPhotos(photoIds);
-          return { data: result, errors: null };
+          const result = await album.addPhotos(photoIds);
+          return { data: !!result, errors: null };
         } catch (err) {
           return { data: false, errors: formatErrors(err, models) };
         }
@@ -103,8 +103,8 @@ const AlbumsResolver = {
         try {
           const album = await models.Album.findById(albumId);
           if (!album) { return false; }
-          const result = album.removePhotos(photoIds);
-          return { data: result, errors: null };
+          const result = await album.removePhotos(photoIds);
+          return { data: !!result, errors: null };
         } catch (err) {
           return { data: false, errors: formatErrors(err, models) };
         }
@@ -123,7 +123,7 @@ const AlbumsResolver = {
 
     deleteAlbum: requiresAuth.createResolver(
       async (parent, { albumId }, { models }) =>
-        models.Album.destroy({ where: { id: albumId } }),
+        !!models.Album.destroy({ where: { id: albumId } }),
     ),
   },
 };
