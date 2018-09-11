@@ -8,6 +8,11 @@ export default `
   type Query {
     allBinItems: BinResponse!
   }
+
+  type Mutation {
+    addToBin(type: String!, ids: [Int!]!): Boolean!
+    restore: Boolean!
+  }
 `;
 
 // type Mutation {

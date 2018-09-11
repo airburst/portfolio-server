@@ -1,6 +1,8 @@
 export const UPLOAD_FOLDER = 'uploads';
 export const PHOTOS_FOLDER = 'photos';
 export const SALT_ROUNDS = 10;
+export const ALBUM = 'album';
+export const PHOTO = 'photo';
 
 // Responsive resizing
 // Number = width

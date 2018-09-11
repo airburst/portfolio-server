@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize';
 import requiresAuth from '../services/permissions';
 import formatErrors from '../formatErrors';
+import { ALBUM, PHOTO } from '../constants';
 
 const { Op } = Sequelize;
 
@@ -41,6 +42,72 @@ const BinResolver = {
         return Promise.all([albums, photos])
           .then(result => result.reduce((prev, cur) => ({ ...prev, ...cur }), {}))
           .catch(err => ({ albums: [], photos: [], errors: formatErrors(err, models) }));
+      },
+    ),
+  },
+
+  Mutation: {
+    addToBin: requiresAuth.createResolver(
+      async (parent, { type, ids }, { models, user }) => {
+        if (type === ALBUM) {
+          try {
+            return models.Album.update({ bin: true }, {
+              returning: true,
+              where: {
+                [Op.and]: {
+                  userId: { [Op.eq]: user.id },
+                  id: { [Op.in]: ids },
+                },
+              },
+            });
+          } catch (err) {
+            return false;
+          }
+        }
+        if (type === PHOTO) {
+          try {
+            return models.Photo.update({ bin: true }, {
+              returning: true,
+              where: {
+                [Op.and]: {
+                  userId: { [Op.eq]: user.id },
+                  id: { [Op.in]: ids },
+                },
+              },
+            });
+          } catch (err) {
+            return false;
+          }
+        }
+        return false;
+      },
+    ),
+
+    restore: requiresAuth.createResolver(
+      async (parent, args, { models, user }) => {
+        try {
+          const restoreAlbums = await models.Album.update({ bin: false }, {
+            returning: true,
+            where: {
+              [Op.and]: {
+                userId: { [Op.eq]: user.id },
+                bin: { [Op.eq]: true },
+              },
+            },
+          });
+          const restorePhotos = await models.Photo.update({ bin: false }, {
+            returning: true,
+            where: {
+              [Op.and]: {
+                userId: { [Op.eq]: user.id },
+                bin: { [Op.eq]: true },
+              },
+            },
+          });
+          return restoreAlbums && restorePhotos;
+        } catch (err) {
+          return false;
+        }
       },
     ),
   },
