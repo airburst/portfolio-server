@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import requiresAuth from '../services/permissions';
+import { deletePhotoFiles } from '../services/file';
 import formatErrors from '../formatErrors';
 import { ALBUM, PHOTO } from '../constants';
 
@@ -105,6 +106,40 @@ const BinResolver = {
                 bin: { [Op.eq]: true },
               },
             },
+          });
+          return true;
+        } catch (err) {
+          return false;
+        }
+      },
+    ),
+
+    emptyBin: requiresAuth.createResolver(
+      async (parent, args, { models, user }) => {
+        try {
+          await models.Album.destroy({
+            returning: true,
+            where: {
+              [Op.and]: {
+                userId: { [Op.eq]: user.id },
+                bin: { [Op.eq]: true },
+              },
+            },
+          });
+          // Need to remove photo files as well as database entries
+          const results = await models.Photo.findAll({
+            attributes: ['id', 'urls'],
+            where: {
+              [Op.and]: {
+                userId: { [Op.eq]: user.id },
+                bin: { [Op.eq]: true },
+              },
+            },
+          });
+          results.forEach(async (result) => {
+            const { id, urls } = result.dataValues;
+            await deletePhotoFiles(urls);
+            await models.Photo.destroy({ where: { id } });
           });
           return true;
         } catch (err) {
