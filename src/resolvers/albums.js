@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize';
 import requiresAuth from '../services/permissions';
 import formatErrors from '../formatErrors';
+import { COVER_SIZE } from '../constants';
 
 const { Op } = Sequelize;
 
@@ -90,6 +91,13 @@ const AlbumsResolver = {
         try {
           const album = await models.Album.findById(albumId);
           if (!album) { return false; }
+
+          // Set first photo as default album cover
+          const firstPhoto = await models.Photo.findById(photoIds[0]);
+          const cover = firstPhoto.dataValues.urls[COVER_SIZE];
+          await models.Album.update({ cover }, { where: { id: albumId } });
+
+          // Add photos to the album
           const result = await album.addPhotos(photoIds);
           return { data: !!result, errors: null };
         } catch (err) {
