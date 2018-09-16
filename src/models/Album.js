@@ -11,6 +11,7 @@ const Album = sequelize.define('albums', {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  description: Sequelize.TEXT,
   cover: Sequelize.STRING,
   isPublic: {
     type: Sequelize.BOOLEAN,

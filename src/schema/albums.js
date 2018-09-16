@@ -2,6 +2,7 @@ export default `
   type Album {
     id: Int!
     name: String!
+    description: String
     cover: String
     views: Int!
     isPublic: Boolean!
@@ -12,6 +13,7 @@ export default `
   input AlbumInput {
     id: Int
     name: String
+    description: String
     cover: String
     isPublic: Boolean
   }
@@ -46,3 +48,5 @@ export default `
     deleteAlbum(albumId: Int!): Boolean!
   }
 `;
+
+// setCover(albumId: Int!, photoId: Int!): AlbumUpdateResponse!
