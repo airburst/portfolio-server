@@ -14,7 +14,8 @@ const convertDate = (date) => {
 const filterExif = (data) => {
   if (!data) { return {}; }
   return {
-    title: data.image && data.image.ImageDescription,
+    title: null,
+    caption: data.image && data.image.ImageDescription,
     exposure: data.exif && data.exif.ExposureTime,
     shutter: data.exif && data.exif.ShutterSpeedValue,
     aperture: data.exif && data.exif.FNumber,
