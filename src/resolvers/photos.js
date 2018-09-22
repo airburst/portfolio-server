@@ -47,9 +47,11 @@ const PhotosResolver = {
 
   Mutation: {
     uploadPhoto: requiresAuth.createResolver(
-      async (parent, { file }, { models, progress, user }) => {
+      async (parent, { file, size }, { models, user, totalUploadSize }) => {
+        console.log('TCL: totalUploadSize', size, totalUploadSize);
         try {
           const { stream, filename, mimetype } = await file;
+          const progress = setProgress(size);
 
           // Image files only (jpg)
           if (mimetype !== 'image/jpeg') {
@@ -57,7 +59,7 @@ const PhotosResolver = {
             return { success: false, error: 'You cannot upload this type of file' };
           }
 
-          await storeUpload(stream, filename, progress);
+          await storeUpload(stream, filename, progress); // TODO: size, totalUploadSize?
 
           // Process the file
           const {
@@ -85,13 +87,13 @@ const PhotosResolver = {
     uploadPhotos: requiresAuth.createResolver(
       async (parent, { files, sizes = [] }, ctx) => {
         const totalUploadSize = sizes.reduce((a, b) => a + b, 0);
-        const progress = setProgress(totalUploadSize);
-        const context = { ...ctx, progress };
+        const context = { ...ctx, totalUploadSize };
 
         return batch()(
           files,
           PhotosResolver.Mutation.uploadPhoto,
           { parent, argName: 'file', context },
+          sizes,
         );
       },
     ),

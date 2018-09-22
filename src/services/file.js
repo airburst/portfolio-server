@@ -18,18 +18,18 @@ export const setProgress = size => progressStream({ length: size, time: 10 }, em
 export const storeUpload = (stream, filename, progress) =>
   new Promise((resolve, reject) => {
     const storePath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
-    // if (progress) {
-    //   stream
-    //     .pipe(progress)
-    //     .pipe(createWriteStream(storePath))
-    //     .on('finish', () => resolve())
-    //     .on('error', err => reject(err));
-    // } else {
-    stream
-      .pipe(createWriteStream(storePath))
-      .on('finish', () => resolve())
-      .on('error', err => reject(err));
-    // }
+    if (progress) {
+      stream
+        .pipe(progress)
+        .pipe(createWriteStream(storePath))
+        .on('finish', () => resolve())
+        .on('error', err => reject(err));
+    } else {
+      stream
+        .pipe(createWriteStream(storePath))
+        .on('finish', () => resolve())
+        .on('error', err => reject(err));
+    }
   });
 
 const deleteFile = (folder, filename) => new Promise((resolve) => {

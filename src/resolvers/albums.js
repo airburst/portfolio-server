@@ -26,6 +26,7 @@ const AlbumsResolver = {
         return models.Album.findAll({
           where: filter,
           include: [{ model: models.Photo, as: 'photos' }],
+          order: [['name']],
         })
           .then(result => ({
             data: result.map(r => r.dataValues),
@@ -46,6 +47,7 @@ const AlbumsResolver = {
           },
         },
         include: [{ model: models.Photo, as: 'photos' }],
+        order: [['name']],
       })
         .then(result => ({
           data: result.map(r => r.dataValues),
