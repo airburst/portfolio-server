@@ -13,6 +13,7 @@ const Album = sequelize.define('albums', {
   },
   description: Sequelize.TEXT,
   cover: Sequelize.STRING,
+  coverId: Sequelize.INTEGER,
   isPublic: {
     type: Sequelize.BOOLEAN,
     allowNull: false,

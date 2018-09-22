@@ -10,7 +10,7 @@ export default `
   }
 
   type Mutation {
-    addToBin(type: String!, ids: [Int!]!): Boolean!
+    addToBin(type: String!, ids: [Int!]!, albumId: Int): Boolean!
     restore: Boolean!
     emptyBin: Boolean!
   }

@@ -49,7 +49,7 @@ const BinResolver = {
 
   Mutation: {
     addToBin: requiresAuth.createResolver(
-      async (parent, { type, ids }, { models, user }) => {
+      async (parent, { type, ids, albumId }, { models, user }) => {
         if (type === ALBUM) {
           try {
             const result = await models.Album.update({ bin: true }, {
@@ -77,6 +77,17 @@ const BinResolver = {
                 },
               },
             });
+            // If any cover ids are in the removed set, set them to null
+            const albums = await models.Album.findAll();
+            albums.forEach((album) => {
+              if (ids.includes(album.dataValues.coverId)) {
+                models.Album.update(
+                  { cover: null, coverId: null },
+                  { where: { id: album.dataValues.id } },
+                );
+              }
+            });
+
             return !!result;
           } catch (err) {
             return false;

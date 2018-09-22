@@ -4,6 +4,7 @@ export default `
     name: String!
     description: String
     cover: String
+    coverId: Int
     views: Int!
     isPublic: Boolean!
     createdAt: String!
@@ -15,6 +16,7 @@ export default `
     name: String
     description: String
     cover: String
+    coverId: Int
     isPublic: Boolean
   }
 

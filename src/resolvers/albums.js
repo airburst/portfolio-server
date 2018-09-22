@@ -96,8 +96,10 @@ const AlbumsResolver = {
 
           // Set first photo as default album cover
           const firstPhoto = await models.Photo.findById(photoIds[0]);
+          // Set cover photo id and url
           const cover = firstPhoto.dataValues.urls[COVER_SIZE];
-          await models.Album.update({ cover }, { where: { id: albumId } });
+          const coverId = firstPhoto.dataValues.id;
+          await models.Album.update({ cover, coverId }, { where: { id: albumId } });
 
           // Add photos to the album
           const result = await album.addPhotos(photoIds);
