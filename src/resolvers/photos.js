@@ -65,11 +65,10 @@ const PhotosResolver = {
 
   Mutation: {
     uploadPhoto: requiresAuth.createResolver(
-      async (parent, { file, size }, { models, user, totalUploadSize }) => {
+      async (parent, { file }, { models, user, totalUploadSize }) => {
         try {
           const { stream, filename, mimetype } = await file;
-          console.log('TCL: upload started', filename, size, totalUploadSize);
-          const progress = setProgress(size, filename);
+          // const progress = setProgress(size, filename);
 
           // Image files only (jpg)
           if (mimetype !== 'image/jpeg') {
@@ -77,8 +76,8 @@ const PhotosResolver = {
             return { success: false, error: 'You cannot upload this type of file' };
           }
 
-          await storeUpload(stream, filename, progress);
-          console.log('TCL: upload done', filename, size, totalUploadSize);
+          await storeUpload(stream, filename);
+          // await storeUpload(stream, filename, progress);
 
           // Process the file
           const {
