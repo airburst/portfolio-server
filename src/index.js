@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -30,16 +31,58 @@ const schema = makeExecutableSchema({
 
 const server = new ApolloServer({
   schema,
-  context: ({ req }) => ({
-    models,
-    user: req.user,
-    SECRET,
-    SECRET2,
-  }),
+  // TODO: Get auth context
+  //  subscriptions: {
+  //   onConnect: (connectionParams, webSocket) => {
+  //     if (connectionParams) {
+  //       console.log('TCL: connectionParams', connectionParams);
+  //       // return validateToken(connectionParams.authToken)
+  //       //   .then(findUser(connectionParams.authToken))
+  //       //   .then(user => ({
+  //       //     currentUser: user,
+  //       //   }));
+
+  //       // onConnect: async ({ token, refreshToken }, webSocket) => {
+  //       //   if (token && refreshToken) {
+  //       //     try {
+  //       //       const { user } = jwt.verify(token, SECRET);
+  //       //       return { models, user };
+  //       //     } catch (err) {
+  //       //       const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
+  //       //       return { models, user: newTokens.user };
+  //       //     }
+  //       //   }
+
+  //       //   return { models };
+  //       // },
+
+
+  //       return { user: 1 };
+  //     }
+
+  //     throw new Error('Missing auth token!');
+  //   },
+  // },
+  // Need to use connection context for subscriptions
+  context: ({ req, connection }) => {
+    if (connection) {
+      console.log('TCL: connection context', connection.context);
+      // connection.context.x-token
+      return {};
+    }
+    return {
+      models,
+      user: req.user,
+      SECRET,
+      SECRET2,
+    };
+  },
 });
+
 
 const graphqlEndpoint = '/graphql';
 const port = process.env.PORT || 3001;
+const subscriptionsEndpoint = `ws://localhost:${port}${server.subscriptionsPath}`;
 const app = express();
 const corsOptions = { origin: '*' };
 
@@ -67,18 +110,26 @@ app.use(addUser);
 app.use(bodyParser.json({ limit: '4mb' }));
 app.use(cors(corsOptions));
 app.use(compression());
-app.use('/playground', playground({ endpointUrl: graphqlEndpoint }));
+app.use('/playground', playground({
+  endpointUrl: graphqlEndpoint,
+  subscriptionsEndpoint,
+}));
 app.use('/photos', express.static(path.join(__dirname, '../', PHOTOS_FOLDER)));
 
 server.applyMiddleware({ app });
+
+// Set up subscriptions
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
 
 process.on('SIGINT', () => {
   process.exit(0);
 });
 
 // Start the socket and graphQl servers
-app.listen({ port }, async () => {
+httpServer.listen({ port }, async () => {
   await models.sequelize.sync({ force: clearAndSeedDb });
   if (clearAndSeedDb) { await seed(); }
   console.info(`🚀 Portfolio API version ${version} ready`);
+  console.info(`🚀 Subscriptions ready at ${subscriptionsEndpoint}`);
 });

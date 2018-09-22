@@ -1,14 +1,13 @@
 import TaskQueue from './TaskQueue';
-
-const BATCH_SIZE = process.env.BATCH_SIZE || 5;
+import { BATCH_CONCURRENCY } from '../constants';
 
 const limitConcurrency = (con) => {
-  if (!con) { return BATCH_SIZE; }
+  if (!con) { return BATCH_CONCURRENCY; }
   if ((typeof con !== 'number') || con < 1) {
     return 1;
   }
-  if (con > BATCH_SIZE) {
-    return BATCH_SIZE;
+  if (con > BATCH_CONCURRENCY) {
+    return BATCH_CONCURRENCY;
   }
   return con;
 };

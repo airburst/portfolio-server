@@ -3,16 +3,26 @@ import rimraf from 'rimraf';
 import { createWriteStream } from 'file-system';
 import progressStream from 'progress-stream';
 import { UPLOAD_FOLDER, PHOTOS_FOLDER } from '../constants';
+import { emitUploadStarted, emitUploadProgress } from '../pubsub';
 
 const ROOT = path.join(__dirname, '../../');
 const HTTP_URL = `${process.env.SERVER_URI}:${process.env.PORT}`;
 const PHOTO_URL = `${HTTP_URL}/photos`;
 
 // TODO: subscription
+/**
+ * This function sets a subscription emitter for upload progress. The progress object exposes
+ * properties for transferred (b), remaining (b), length (b) and percentage.
+ * @param {*} size in bytes
+ * @param {*} filename
+ */
+export const setProgress = (size, filename) =>
+  progressStream(
+    { length: size, time: 10 },
+    progress => console.log(filename, Math.round(progress.percentage))
+    || emitUploadProgress(filename, Math.round(progress.percentage)),
+  );
 
-const emitProgress = progress => console.log(Math.round(progress.percentage));
-
-export const setProgress = size => progressStream({ length: size, time: 10 }, emitProgress);
 
 // TODO: make progress work!
 export const storeUpload = (stream, filename, progress) =>

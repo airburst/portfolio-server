@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import { withFilter } from 'graphql-subscriptions';
 import {
   storeUpload, setProgress, cleanUpload, deletePhotoFiles,
 } from '../services/file';
@@ -6,10 +7,27 @@ import requiresAuth from '../services/permissions';
 import formatErrors from '../formatErrors';
 import processFile from '../services/processFile';
 import batch from '../services/batch';
+import pubsub, { UPLOAD_STARTED, UPLOAD_PROGRESS } from '../pubsub';
 
 const { Op } = Sequelize;
 
 const PhotosResolver = {
+  Subscription: {
+    uploadStarted: {
+      subscribe: () => pubsub.asyncIterator(UPLOAD_STARTED),
+    },
+    uploadProgress: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(UPLOAD_PROGRESS),
+        (payload, args) => payload.uploadProgress.filename === args.filename,
+      ),
+      // subscribe: requiresAuth.createResolver(withFilter(
+      //   () => pubsub.asyncIterator(UPLOAD_PROGRESS),
+      //   (payload, args) => payload.uploadProgress.filename === args.filename,
+      // )),
+    },
+  },
+
   Query: {
     allPhotos: (parent, { albumId, orderBy }, { models, userId = 1 }) => {
       const filter = albumId
@@ -48,10 +66,10 @@ const PhotosResolver = {
   Mutation: {
     uploadPhoto: requiresAuth.createResolver(
       async (parent, { file, size }, { models, user, totalUploadSize }) => {
-        console.log('TCL: totalUploadSize', size, totalUploadSize);
         try {
           const { stream, filename, mimetype } = await file;
-          const progress = setProgress(size);
+          console.log('TCL: upload started', filename, size, totalUploadSize);
+          const progress = setProgress(size, filename);
 
           // Image files only (jpg)
           if (mimetype !== 'image/jpeg') {
@@ -59,7 +77,8 @@ const PhotosResolver = {
             return { success: false, error: 'You cannot upload this type of file' };
           }
 
-          await storeUpload(stream, filename, progress); // TODO: size, totalUploadSize?
+          await storeUpload(stream, filename, progress);
+          console.log('TCL: upload done', filename, size, totalUploadSize);
 
           // Process the file
           const {

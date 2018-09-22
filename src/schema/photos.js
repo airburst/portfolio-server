@@ -51,6 +51,11 @@ export default `
     errors: [Error!]
   }
 
+  type Progress {
+    filename: String
+    percentage: Int
+  }
+
   type Query {
     allPhotos(albumId: Int, orderBy: PhotoOrderByInput): PhotoResponse!
   }
@@ -60,5 +65,10 @@ export default `
     uploadPhotos(files: [Upload!]!, sizes: [Int!]): [UploadResponse!]!
     updatePhoto(photo: PhotoInput!): Boolean!
     deletePhoto(id: Int!): Boolean!
+  }
+
+  type Subscription {
+    uploadStarted: String
+    uploadProgress(filename: String!): Progress
   }
 `;
