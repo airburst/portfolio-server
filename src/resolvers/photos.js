@@ -93,7 +93,7 @@ const PhotosResolver = {
           await cleanUpload(filename);
 
           return {
-            success: true, exif: JSON.stringify(exif), error, thumbnail,
+            name, success: true, exif: JSON.stringify(exif), error, thumbnail,
           };
         } catch (err) {
           console.error(err.message);

@@ -13,6 +13,7 @@ export default `
   }
 
   type UploadResponse {
+    name: String!
     success: Boolean!
     exif: String
     error: String
