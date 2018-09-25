@@ -44,6 +44,7 @@ const AlbumsResolver = {
             userId: { [Op.eq]: userId },
             isPublic: { [Op.eq]: true },
             bin: { [Op.eq]: false },
+            cover: { [Op.ne]: null },
           },
         },
         include: [{ model: models.Photo, as: 'photos' }],
