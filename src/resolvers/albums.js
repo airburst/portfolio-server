@@ -129,7 +129,7 @@ const AlbumsResolver = {
         const album = await models.Album.findById(albumId);
         let { views } = album.dataValues;
         views += 1;
-        return album.update({ views });
+        return !!album.update({ views });
       },
     ),
 
