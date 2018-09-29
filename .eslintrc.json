@@ -9,6 +9,7 @@
     "no-param-reassign": "off",
     "no-underscore-dangle": "off",
     "no-restricted-globals": "off",
+    "import/prefer-default-export": "off",
     "no-unused-vars": "off",
     "max-len": [
       "error",

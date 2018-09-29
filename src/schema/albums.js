@@ -2,6 +2,7 @@ export default `
   type Album {
     id: Int!
     name: String!
+    slug: String
     description: String
     cover: String
     coverId: Int
@@ -14,6 +15,7 @@ export default `
   input AlbumInput {
     id: Int
     name: String
+    slug: String
     description: String
     cover: String
     coverId: Int

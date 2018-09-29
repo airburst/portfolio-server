@@ -48,7 +48,7 @@ const AlbumsResolver = {
           },
         },
         include: [{ model: models.Photo, as: 'photos' }],
-        order: [['updatedAt', 'DESC']],
+        order: [['createdAt', 'DESC']],
       })
         .then(result => ({
           data: result.map(r => r.dataValues),
