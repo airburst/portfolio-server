@@ -59,6 +59,7 @@ export default `
 
   type Query {
     allPhotos(albumId: Int, orderBy: PhotoOrderByInput): PhotoResponse!
+    publicPhotos(albumId: Int, orderBy: PhotoOrderByInput): PhotoResponse!
   }
 
   type Mutation {

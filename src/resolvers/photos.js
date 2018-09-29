@@ -61,6 +61,40 @@ const PhotosResolver = {
         }))
         .catch(err => ({ data: [], errors: formatErrors(err, models) }));
     },
+
+    publicPhotos: (parent, { albumId, orderBy }, { models, userId = 1 }) => {
+      const filter = albumId
+        ? {
+          [Op.and]: {
+            userId: { [Op.eq]: userId },
+            bin: { [Op.eq]: false },
+            isPublic: { [Op.eq]: true },
+            '$albums.id$': { [Op.eq]: albumId },
+          },
+        }
+        : {
+          [Op.and]: {
+            userId: { [Op.eq]: userId },
+            bin: { [Op.eq]: false },
+          },
+        };
+      const order = orderBy ? orderBy.split('_') : ['id', 'DESC'];
+
+      return models.Photo.findAll({
+        include: [{
+          model: models.Album,
+          attributes: ['id'],
+          through: 'album_photos',
+        }],
+        where: filter,
+        order: [order],
+      })
+        .then(result => ({
+          data: result.map(r => r.dataValues),
+          errors: null,
+        }))
+        .catch(err => ({ data: [], errors: formatErrors(err, models) }));
+    },
   },
 
   Mutation: {

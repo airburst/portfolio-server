@@ -124,15 +124,12 @@ const AlbumsResolver = {
       },
     ),
 
-
-    addView: requiresAuth.createResolver(
-      async (parent, { albumId }, { models }) => {
-        const album = await models.Album.findById(albumId);
-        let { views } = album.dataValues;
-        views += 1;
-        return !!album.update({ views });
-      },
-    ),
+    addView: async (parent, { albumId }, { models }) => {
+      const album = await models.Album.findById(albumId);
+      let { views } = album.dataValues;
+      views += 1;
+      return !!album.update({ views });
+    },
 
     deleteAlbum: requiresAuth.createResolver(
       async (parent, { albumId }, { models }) =>
