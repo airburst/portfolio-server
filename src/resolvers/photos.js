@@ -62,14 +62,32 @@ const PhotosResolver = {
         .catch(err => ({ data: [], errors: formatErrors(err, models) }));
     },
 
-    publicPhotos: (parent, { albumId, orderBy }, { models, userId = 1 }) => {
+    publicPhotos: async (parent, { albumId, orderBy }, { models, userId = 1 }) => {
+      // Determine whether albumId is slug or number
+      let id;
+      if (!isNaN(parseInt(albumId, 10))) {
+        id = parseInt(albumId, 10);
+      } else {
+        // Slug
+        const result = await models.Album.findOne({
+          where: { slug: { [Op.eq]: albumId } },
+        });
+        if (!result) {
+          return {
+            data: [],
+            errors: Error('No album by that name'),
+          };
+        }
+        id = result.dataValues.id;
+      }
+
       const filter = albumId
         ? {
           [Op.and]: {
             userId: { [Op.eq]: userId },
             bin: { [Op.eq]: false },
             isPublic: { [Op.eq]: true },
-            '$albums.id$': { [Op.eq]: albumId },
+            '$albums.id$': { [Op.eq]: id },
           },
         }
         : {
