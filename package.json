@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "start": "babel-node src/index.js",
-    "build": "rimraf dist && babel src -d dist",
+    "build": "NODE_ENV=production && rimraf dist && babel src -d dist",
     "serve": "node dist/index.js",
     "prod": "npm run build && npm run serve",
     "test": "jest",

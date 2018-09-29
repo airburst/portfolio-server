@@ -2,23 +2,24 @@ FROM mhart/alpine-node:latest
 
 # Create app directory
 RUN mkdir -p /usr/app
-RUN mkdir -p /usr/app/logs
+RUN mkdir -p /usr/app/uploads
+RUN mkdir -p /usr/app/photos
 WORKDIR /usr/app
 
 # Install app dependencies
-COPY package.json /usr/app/
+# COPY package.json /usr/app/
 
 # RUN npm install and make production build
-RUN npm install
+# RUN npm install
 
 # Bundle app source
 COPY . /usr/app
 
 # Build production (dist) folder
-RUN npm run build
+# RUN npm run build
 
-# Make logfiles available outside container
-# VOLUME  ["/usr/app/logs", "/usr/app/files"]
+# Make photos available outside container
+VOLUME  ["/usr/app/photos"]
 
 EXPOSE 3001
 
