@@ -29,7 +29,7 @@ exports.default = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.de
         case 0:
           _context.next = 2;
           return User.create({
-            username: 'mark', email: 'mark@fairhursts.net', password: 'password', isAdmin: true
+            username: 'test', email: 'test@fairhursts.net', password: 'password', isAdmin: true
           });
 
         case 2:

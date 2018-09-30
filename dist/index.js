@@ -52,9 +52,9 @@ var _models = require('./models');
 
 var _models2 = _interopRequireDefault(_models);
 
-var _seed = require('./models/seed');
+var _seedUser = require('./models/seedUser');
 
-var _seed2 = _interopRequireDefault(_seed);
+var _seedUser2 = _interopRequireDefault(_seedUser);
 
 var _auth = require('./services/auth');
 
@@ -65,8 +65,6 @@ var _constants = require('./constants');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _dotenv2.default.config();
-
-var clearAndSeedDb = false;
 
 // eslint-disable-next-line prefer-destructuring
 var SECRET = process.env.SECRET;
@@ -197,7 +195,7 @@ app.use(_bodyParser2.default.json({ limit: '4mb' }));
 app.use((0, _cors2.default)(corsOptions));
 app.use((0, _compression2.default)());
 app.use('/playground', (0, _graphqlPlaygroundMiddlewareExpress2.default)({
-  endpointUrl: graphqlEndpoint,
+  endpoint: graphqlEndpoint,
   subscriptionsEndpoint: subscriptionsEndpoint
 }));
 app.use('/photos', _express2.default.static(_path2.default.join(__dirname, '../', _constants.PHOTOS_FOLDER)));
@@ -219,22 +217,17 @@ httpServer.listen({ port: port }, (0, _asyncToGenerator3.default)( /*#__PURE__*/
       switch (_context2.prev = _context2.next) {
         case 0:
           _context2.next = 2;
-          return _models2.default.sequelize.sync({ force: clearAndSeedDb });
+          return _models2.default.sequelize.sync();
 
         case 2:
-          if (!clearAndSeedDb) {
-            _context2.next = 5;
-            break;
-          }
+          _context2.next = 4;
+          return (0, _seedUser2.default)();
 
-          _context2.next = 5;
-          return (0, _seed2.default)();
-
-        case 5:
+        case 4:
           console.info('\uD83D\uDE80 Portfolio API version ' + _package.version + ' ready');
           console.info('\uD83D\uDE80 Subscriptions ready at ' + subscriptionsEndpoint);
 
-        case 7:
+        case 6:
         case 'end':
           return _context2.stop();
       }

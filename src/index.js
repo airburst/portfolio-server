@@ -10,14 +10,12 @@ import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import playground from 'graphql-playground-middleware-express';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import models from './models';
-import seed from './models/seed';
+import seedUser from './models/seedUser';
 import { refreshTokens } from './services/auth';
 import { version } from '../package.json';
 import { PHOTOS_FOLDER } from './constants';
 
 dotenv.config();
-
-const clearAndSeedDb = false;
 
 // eslint-disable-next-line prefer-destructuring
 const SECRET = process.env.SECRET;
@@ -111,7 +109,7 @@ app.use(bodyParser.json({ limit: '4mb' }));
 app.use(cors(corsOptions));
 app.use(compression());
 app.use('/playground', playground({
-  endpointUrl: graphqlEndpoint,
+  endpoint: graphqlEndpoint,
   subscriptionsEndpoint,
 }));
 app.use('/photos', express.static(path.join(__dirname, '../', PHOTOS_FOLDER)));
@@ -128,8 +126,8 @@ process.on('SIGINT', () => {
 
 // Start the socket and graphQl servers
 httpServer.listen({ port }, async () => {
-  await models.sequelize.sync({ force: clearAndSeedDb });
-  if (clearAndSeedDb) { await seed(); }
+  await models.sequelize.sync();
+  await seedUser();
   console.info(`🚀 Portfolio API version ${version} ready`);
   console.info(`🚀 Subscriptions ready at ${subscriptionsEndpoint}`);
 });

@@ -5,7 +5,7 @@ const { User, Photo, Album } = models;
 export default async () => {
   // Create users
   await User.create({
-    username: 'mark', email: 'mark@fairhursts.net', password: 'password', isAdmin: true,
+    username: 'test', email: 'test@fairhursts.net', password: 'password', isAdmin: true,
   });
   await User.create({ username: 'bob', email: 'bob@bob.com', password: 'test' });
 
