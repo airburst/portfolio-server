@@ -95,12 +95,14 @@ const AlbumsResolver = {
           const album = await models.Album.findById(albumId);
           if (!album) { return false; }
 
-          // Set first photo as default album cover
-          const firstPhoto = await models.Photo.findById(photoIds[0]);
-          // Set cover photo id and url
-          const cover = firstPhoto.dataValues.urls[COVER_SIZE];
-          const coverId = firstPhoto.dataValues.id;
-          await models.Album.update({ cover, coverId }, { where: { id: albumId } });
+          // Set first photo as default album cover if none set
+          if (!album.dataValues.cover) {
+            const firstPhoto = await models.Photo.findById(photoIds[0]);
+            // Set cover photo id and url
+            const cover = firstPhoto.dataValues.urls[COVER_SIZE];
+            const coverId = firstPhoto.dataValues.id;
+            await models.Album.update({ cover, coverId }, { where: { id: albumId } });
+          }
 
           // Add photos to the album
           const result = await album.addPhotos(photoIds);
