@@ -6,6 +6,7 @@ export default {
   Mutation: {
     login: (parent, { username, password }, { models, SECRET, SECRET2 }) =>
       tryLogin(username, password, models, SECRET, SECRET2),
+
     addUser: requiresAuth.createResolver((parent, args, { models }) =>
       models.User.create(args)
         .then(result => ({ id: result.id, errors: null }))

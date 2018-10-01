@@ -20,6 +20,9 @@ dotenv.config();
 // eslint-disable-next-line prefer-destructuring
 const SECRET = process.env.SECRET;
 const SECRET2 = process.env.REFRESH_SECRET;
+const wsUri = process.env.SERVER_WS || 'ws://localhost';
+const port = process.env.PORT || 3001;
+
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 const schema = makeExecutableSchema({
@@ -33,7 +36,6 @@ const server = new ApolloServer({
   //  subscriptions: {
   //   onConnect: (connectionParams, webSocket) => {
   //     if (connectionParams) {
-  //       console.log('TCL: connectionParams', connectionParams);
   //       // return validateToken(connectionParams.authToken)
   //       //   .then(findUser(connectionParams.authToken))
   //       //   .then(user => ({
@@ -64,7 +66,6 @@ const server = new ApolloServer({
   // Need to use connection context for subscriptions
   context: ({ req, connection }) => {
     if (connection) {
-      console.log('TCL: connection context', connection.context);
       // connection.context.x-token
       return {};
     }
@@ -77,10 +78,8 @@ const server = new ApolloServer({
   },
 });
 
-
 const graphqlEndpoint = '/graphql';
-const port = process.env.PORT || 3001;
-const subscriptionsEndpoint = `ws://localhost:${port}${server.subscriptionsPath}`;
+const subscriptionsEndpoint = `${wsUri}:${port}${server.subscriptionsPath}`;
 const app = express();
 const corsOptions = { origin: '*' };
 
