@@ -118,16 +118,16 @@ const PhotosResolver = {
   Mutation: {
     uploadPhoto: requiresAuth.createResolver(
       async (parent, { file }, { models, user, totalUploadSize }) => {
+        const { stream, filename, mimetype } = await file;
+
+        // Image files only (jpg)
+        if (mimetype !== 'image/jpeg') {
+          console.error(`User tried to upload a file with mimetype: ${mimetype}`);
+          return { success: false, error: 'You cannot upload this type of file' };
+        }
+
         try {
-          const { stream, filename, mimetype } = await file;
           // const progress = setProgress(size, filename);
-
-          // Image files only (jpg)
-          if (mimetype !== 'image/jpeg') {
-            console.error(`User tried to upload a file with mimetype: ${mimetype}`);
-            return { success: false, error: 'You cannot upload this type of file' };
-          }
-
           await storeUpload(stream, filename);
           // await storeUpload(stream, filename, progress);
 
@@ -148,6 +148,7 @@ const PhotosResolver = {
             name, success: true, exif: JSON.stringify(exif), error, thumbnail,
           };
         } catch (err) {
+          console.error(`FAIL: Unable to upload ${filename}`);
           console.error(err.message);
           return { success: false, error: formatErrors(err, models) };
         }

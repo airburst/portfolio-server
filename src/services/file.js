@@ -1,6 +1,6 @@
 import path from 'path';
 import rimraf from 'rimraf';
-import { createWriteStream } from 'file-system';
+import fs, { createWriteStream } from 'file-system';
 import progressStream from 'progress-stream';
 import { UPLOAD_FOLDER, PHOTOS_FOLDER } from '../constants';
 import { emitUploadStarted, emitUploadProgress } from '../pubsub';
@@ -29,13 +29,19 @@ export const storeUpload = (stream, filename, progress) =>
   new Promise((resolve, reject) => {
     const storePath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
     if (progress) {
-      stream
-        .pipe(progress)
-        .pipe(createWriteStream(storePath))
-        .on('finish', () => resolve())
-        .on('error', err => reject(err));
+      /* stream
+          .pipe(progress)
+          .pipe(createWriteStream(storePath))
+          .on('finish', () => resolve())
+          .on('error', err => reject(err)); */
     } else {
       stream
+        .on('error', (error) => {
+          if (stream.truncated) {
+            fs.unlinkSync(storePath);
+          }
+          reject(error);
+        })
         .pipe(createWriteStream(storePath))
         .on('finish', () => resolve())
         .on('error', err => reject(err));
