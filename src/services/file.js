@@ -28,6 +28,7 @@ export const setProgress = (size, filename) =>
 export const storeUpload = (stream, filename, progress) =>
   new Promise((resolve, reject) => {
     const storePath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
+    console.log('TCL: storePath', storePath);
     if (progress) {
       /* stream
           .pipe(progress)

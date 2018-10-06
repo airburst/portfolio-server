@@ -127,14 +127,20 @@ const PhotosResolver = {
         }
 
         try {
+          console.log('Try to upload', filename); // FIXME:
+
           // const progress = setProgress(size, filename);
           await storeUpload(stream, filename);
           // await storeUpload(stream, filename, progress);
+
+          console.log('Uploaded', filename);
 
           // Process the file
           const {
             exif, error, urls, thumbnail, name,
           } = await processFile(filename);
+
+          console.log('Processed', filename);
 
           // Write to database
           const photoData = {
