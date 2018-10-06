@@ -45,7 +45,7 @@ const makeFolderName = (fileName) => {
 
 const makeRelativePath = (absolutePath) => {
   const abs = path.join(__dirname, '../..');
-  return absolutePath.replace(abs, `${process.env.SERVER_URI}:${process.env.PORT}`);
+  return absolutePath.replace(abs, '');
 };
 
 const getDimensions = (size) => {

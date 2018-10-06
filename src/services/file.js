@@ -23,7 +23,6 @@ export const setProgress = (size, filename) =>
     || emitUploadProgress(filename, Math.round(progress.percentage)),
   );
 
-
 // TODO: make progress work!
 export const storeUpload = (stream, filename, progress) =>
   new Promise((resolve, reject) => {
