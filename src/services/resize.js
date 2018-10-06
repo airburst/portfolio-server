@@ -45,6 +45,9 @@ const makeFolderName = (fileName) => {
 
 const makeRelativePath = (absolutePath) => {
   const abs = path.join(__dirname, '../..');
+
+  console.log(absolutePath.replace(abs, ''));
+
   return absolutePath.replace(abs, '');
 };
 
