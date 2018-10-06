@@ -7,6 +7,7 @@ import { emitUploadStarted, emitUploadProgress } from '../pubsub';
 
 const ROOT = path.join(__dirname, '../../');
 const HTTP_URL = `${process.env.SERVER_URI}:${process.env.PORT}`;
+console.log('TCL: HTTP_URL', HTTP_URL);
 const PHOTO_URL = `${HTTP_URL}/photos`;
 
 // TODO: subscription

@@ -25,7 +25,7 @@ RUN npm install nopt
 RUN npm install --prod
 
 # Build production (dist) folder
-# RUN npm run build
+RUN npm run build
 
 # Make photos available outside container
 VOLUME  ["/usr/app/photos"]
