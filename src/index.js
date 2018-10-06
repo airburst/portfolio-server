@@ -14,6 +14,8 @@ import seedUser from './models/seedUser';
 import { refreshTokens } from './services/auth';
 import { version } from '../package.json';
 import { PHOTOS_FOLDER } from './constants';
+import resolversSet from './resolvers';
+import schemaSet from './schema';
 
 dotenv.config();
 
@@ -23,8 +25,8 @@ const SECRET2 = process.env.REFRESH_SECRET;
 const wsUri = process.env.SERVER_WS || 'ws://localhost';
 const port = process.env.PORT || 3001;
 
-const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
-const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
+const typeDefs = mergeTypes(schemaSet);
+const resolvers = mergeResolvers(resolversSet);
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,

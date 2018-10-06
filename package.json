@@ -1,12 +1,12 @@
 {
   "name": "portfolio-server",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "start": "babel-node src/index.js",
     "build": "NODE_ENV=production && rimraf dist && babel src -d dist",
-    "build-webpack": "NODE_ENV=production && rimraf dist && webpack --config webpack.config.js",
+    "build-webpack": "NODE_ENV=production && rimraf dist && webpack --mode production --config webpack.config.js",
     "serve": "node dist/index.js",
     "prod": "npm run build && npm run serve",
     "test": "jest",
@@ -53,6 +53,8 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
   }
 }

@@ -21,16 +21,17 @@ COPY . /usr/app
 
 # Install npm dependencies and make production build
 RUN npm install nopt
+RUN npm install -g webpack webpack-cli
 
 RUN npm install --prod
 
 # Build production (dist) folder
-RUN npm run build
+RUN npm run build-webpack
 
 # Make photos available outside container
 VOLUME  ["/usr/app/photos"]
 
-EXPOSE 3001
+EXPOSE 4001
 
 # Serve dist folder
 CMD [ "node", "dist/index.js" ]
