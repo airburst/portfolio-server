@@ -3,12 +3,8 @@ import rimraf from 'rimraf';
 import fs, { createWriteStream } from 'file-system';
 import progressStream from 'progress-stream';
 import { UPLOAD_FOLDER, PHOTOS_FOLDER } from '../constants';
+import { ROOT, PHOTO_URL } from './utils';
 import { emitUploadStarted, emitUploadProgress } from '../pubsub';
-
-const ROOT = path.join(__dirname, '../../');
-const HTTP_URL = `${process.env.SERVER_URI}:${process.env.PORT}`;
-console.log('TCL: HTTP_URL', HTTP_URL);
-const PHOTO_URL = `${HTTP_URL}/photos`;
 
 // TODO: subscription
 /**
@@ -27,8 +23,7 @@ export const setProgress = (size, filename) =>
 // TODO: make progress work!
 export const storeUpload = (stream, filename, progress) =>
   new Promise((resolve, reject) => {
-    const storePath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
-    console.log('TCL: storePath', storePath);
+    const storePath = path.join(ROOT, UPLOAD_FOLDER, filename);
     if (progress) {
       /* stream
           .pipe(progress)

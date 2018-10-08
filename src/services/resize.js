@@ -6,10 +6,11 @@ import sharp from 'sharp';
 import {
   UPLOAD_FOLDER, PHOTOS_FOLDER, SIZES, DELIM, THUMBNAIL_SIZE,
 } from '../constants';
+import { ROOT } from './utils';
 
 dotenv.config();
 
-const BASE_URL = path.join(__dirname, `../../${PHOTOS_FOLDER}`);
+const BASE_URL = path.join(ROOT, PHOTOS_FOLDER);
 
 // Write any missing folders in a file path
 const writePath = (filePath, cb) => {
@@ -45,9 +46,6 @@ const makeFolderName = (fileName) => {
 
 const makeRelativePath = (absolutePath) => {
   const abs = path.join(__dirname, '../..');
-
-  console.log(absolutePath.replace(abs, ''));
-
   return absolutePath.replace(abs, '');
 };
 
@@ -84,7 +82,7 @@ export const resize = (filename, exif) => size => new Promise((resolve, reject) 
     }
     const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
     const ext = path.extname(filename);
-    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
+    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}.${ext}`);
     try {
       writePath(outName, async () => {
         const outPath = path.join(outName);
@@ -100,6 +98,9 @@ export const resize = (filename, exif) => size => new Promise((resolve, reject) 
             .toFile(outPath);
         }
         // Convert file paths to relative server paths
+
+        console.log('TCL: resize -> outPath', outPath);
+        console.log('TCL: resize -> relative', makeRelativePath(outPath));
         resolve(makeRelativePath(outPath));
       });
     } catch (e) {
@@ -120,12 +121,3 @@ export const resizeImage = async (filename, exif) => {
     return { url: null, error: err };
   }
 };
-
-/* Use like:
-<img srcset="elva-fairy-320w.jpg 320w,
-             elva-fairy-480w.jpg 480w,
-             elva-fairy-800w.jpg 800w"
-     sizes="(max-width: 320px) 280px,
-            (max-width: 480px) 440px,
-            800px"
-     src="elva-fairy-800w.jpg" alt="Elva dressed as a fairy"> */

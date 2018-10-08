@@ -29,7 +29,7 @@ RUN npm install --prod
 RUN npm run build-webpack
 
 # Make photos available outside container
-VOLUME  ["/usr/app/photos"]
+VOLUME  ["/usr/app/photos", "/usr/app/uploads"]
 
 EXPOSE 4001
 

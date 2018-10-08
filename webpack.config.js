@@ -6,6 +6,11 @@ const config = {
   target: 'node',
   entry: './src/index.js',
   devtool: 'source-map',
+  context: __dirname,
+  node: {
+    __filename: true,
+    __dirname: true,
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js',
