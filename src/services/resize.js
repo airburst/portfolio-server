@@ -44,10 +44,7 @@ const makeFolderName = (fileName) => {
   return getNewFileVersion(filePath);
 };
 
-const makeRelativePath = (absolutePath) => {
-  const abs = path.join(__dirname, '../..');
-  return absolutePath.replace(abs, '');
-};
+const makeRelativePath = absolutePath => `/${absolutePath.replace(ROOT, '')}`;
 
 const getDimensions = (size) => {
   if (!size || size === 'original') {
@@ -82,7 +79,7 @@ export const resize = (filename, exif) => size => new Promise((resolve, reject) 
     }
     const inPath = path.join(__dirname, `../../${UPLOAD_FOLDER}`, filename);
     const ext = path.extname(filename);
-    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}.${ext}`);
+    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
     try {
       writePath(outName, async () => {
         const outPath = path.join(outName);
@@ -98,9 +95,6 @@ export const resize = (filename, exif) => size => new Promise((resolve, reject) 
             .toFile(outPath);
         }
         // Convert file paths to relative server paths
-
-        console.log('TCL: resize -> outPath', outPath);
-        console.log('TCL: resize -> relative', makeRelativePath(outPath));
         resolve(makeRelativePath(outPath));
       });
     } catch (e) {

@@ -2139,10 +2139,7 @@ const makeFolderName = (fileName) => {
   return getNewFileVersion(filePath);
 };
 
-const makeRelativePath = (absolutePath) => {
-  const abs = path__WEBPACK_IMPORTED_MODULE_0___default.a.join(__dirname, '../..');
-  return absolutePath.replace(abs, '');
-};
+const makeRelativePath = absolutePath => `/${absolutePath.replace(_utils__WEBPACK_IMPORTED_MODULE_6__["ROOT"], '')}`;
 
 const getDimensions = (size) => {
   if (!size || size === 'original') {
@@ -2177,7 +2174,7 @@ const resize = (filename, exif) => size => new Promise((resolve, reject) => {
     }
     const inPath = path__WEBPACK_IMPORTED_MODULE_0___default.a.join(__dirname, `../../${_constants__WEBPACK_IMPORTED_MODULE_5__["UPLOAD_FOLDER"]}`, filename);
     const ext = path__WEBPACK_IMPORTED_MODULE_0___default.a.extname(filename);
-    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}.${ext}`);
+    const outName = makeFolderName(`${filename.split(ext)[0]}${getDimensions(size)}${ext}`);
     try {
       writePath(outName, async () => {
         const outPath = path__WEBPACK_IMPORTED_MODULE_0___default.a.join(outName);
@@ -2193,9 +2190,9 @@ const resize = (filename, exif) => size => new Promise((resolve, reject) => {
             .toFile(outPath);
         }
         // Convert file paths to relative server paths
+        // FIXME: needs a leading / in built mode
+        console.log({ ROOT: _utils__WEBPACK_IMPORTED_MODULE_6__["ROOT"], outPath, relative: makeRelativePath(outPath) });
 
-        console.log('TCL: resize -> outPath', outPath);
-        console.log('TCL: resize -> relative', makeRelativePath(outPath));
         resolve(makeRelativePath(outPath));
       });
     } catch (e) {
@@ -2241,8 +2238,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const env = "development";
+console.log('TCL: env', env);
 
 const HTTP_URL = `${process.env.SERVER_URI}:${process.env.PORT}`;
+console.log('TCL: HTTP_URL', HTTP_URL);
 
 const PHOTO_URL = `${HTTP_URL}/${_constants__WEBPACK_IMPORTED_MODULE_1__["PHOTOS_FOLDER"]}`;
 
