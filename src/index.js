@@ -8,7 +8,7 @@ import compression from 'compression';
 import jwt from 'jsonwebtoken';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import playground from 'graphql-playground-middleware-express';
-import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
+import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import models from './models';
 import seedUser from './models/seedUser';
 import { refreshTokens } from './services/auth';

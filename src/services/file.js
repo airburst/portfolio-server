@@ -2,8 +2,8 @@ import path from 'path';
 import rimraf from 'rimraf';
 import fs, { createWriteStream } from 'file-system';
 import progressStream from 'progress-stream';
-import { UPLOAD_FOLDER, PHOTOS_FOLDER } from '../constants';
-import { ROOT, PHOTO_URL } from './utils';
+import { UPLOAD_FOLDER } from '../constants';
+import { ROOT } from './utils';
 import { emitUploadStarted, emitUploadProgress } from '../pubsub';
 
 // TODO: subscription
@@ -44,7 +44,7 @@ export const storeUpload = (stream, filename, progress) =>
     }
   });
 
-const deleteFile = (folder, filename) => new Promise((resolve) => {
+const deleteFile = (filename, folder = '/') => new Promise((resolve) => {
   const file = path.join(ROOT, folder, filename);
   rimraf(file, {}, (error) => {
     if (error) {
@@ -59,9 +59,8 @@ export const deletePhotoFiles = files =>
     if (files && files.length) {
       // Replace any non-null http url with ROOT
       const deNulledList = files.filter(n => n);
-      const localFiles = deNulledList.map(f => f && f.replace(PHOTO_URL, ''));
       try {
-        await Promise.all(localFiles.map(f => deleteFile(PHOTOS_FOLDER, f)));
+        await Promise.all(deNulledList.map(f => deleteFile(f)));
         resolve();
       } catch (err) {
         reject(err);
@@ -80,4 +79,4 @@ const deleteAllFiles = folder => new Promise((resolve) => {
 
 export const cleanUploads = () => deleteAllFiles(UPLOAD_FOLDER);
 
-export const cleanUpload = filename => deleteFile(UPLOAD_FOLDER, filename);
+export const cleanUpload = filename => deleteFile(filename, UPLOAD_FOLDER);
