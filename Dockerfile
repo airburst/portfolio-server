@@ -26,7 +26,7 @@ RUN npm install -g webpack webpack-cli
 RUN npm install --prod
 
 # Build production (dist) folder
-RUN npm run build-webpack
+RUN npm run build
 
 # Make photos available outside container
 VOLUME  ["/usr/app/photos", "/usr/app/uploads"]

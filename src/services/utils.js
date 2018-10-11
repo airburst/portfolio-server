@@ -10,4 +10,4 @@ export const PHOTO_URL = `${HTTP_URL}/${PHOTOS_FOLDER}`;
 
 export const ROOT = (env && env === 'development')
   ? path.join(__dirname, '../../')
-  : path.join(__dirname, '../');
+  : '/usr/app';
