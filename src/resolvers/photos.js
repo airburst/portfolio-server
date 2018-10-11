@@ -136,8 +136,6 @@ const PhotosResolver = {
             exif, error, urls, thumbnail, name,
           } = await processFile(filename);
 
-          console.log('Processed', filename);
-
           // Write to database
           const photoData = {
             ...exif, urls, thumbnail, name, userId: user.id,
