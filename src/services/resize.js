@@ -6,10 +6,11 @@ import sharp from 'sharp';
 import {
   UPLOAD_FOLDER, PHOTOS_FOLDER, SIZES, DELIM, THUMBNAIL_SIZE,
 } from '../constants';
+import { ROOT } from './utils';
 
 dotenv.config();
 
-const BASE_URL = path.join(__dirname, `../../${PHOTOS_FOLDER}`);
+const BASE_URL = path.join(ROOT, PHOTOS_FOLDER);
 
 // Write any missing folders in a file path
 const writePath = (filePath, cb) => {
@@ -43,13 +44,7 @@ const makeFolderName = (fileName) => {
   return getNewFileVersion(filePath);
 };
 
-const makeRelativePath = (absolutePath) => {
-  const abs = path.join(__dirname, '../..');
-
-  console.log(absolutePath.replace(abs, ''));
-
-  return absolutePath.replace(abs, '');
-};
+const makeRelativePath = absolutePath => `/${absolutePath.replace(ROOT, '')}`;
 
 const getDimensions = (size) => {
   if (!size || size === 'original') {
@@ -120,12 +115,3 @@ export const resizeImage = async (filename, exif) => {
     return { url: null, error: err };
   }
 };
-
-/* Use like:
-<img srcset="elva-fairy-320w.jpg 320w,
-             elva-fairy-480w.jpg 480w,
-             elva-fairy-800w.jpg 800w"
-     sizes="(max-width: 320px) 280px,
-            (max-width: 480px) 440px,
-            800px"
-     src="elva-fairy-800w.jpg" alt="Elva dressed as a fairy"> */
