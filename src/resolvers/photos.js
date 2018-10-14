@@ -96,10 +96,7 @@ const PhotosResolver = {
             bin: { [Op.eq]: false },
           },
         };
-      const order = orderBy ? orderBy.split('_') : [
-        ['dateTaken', 'DESC'],
-        ['createdAt', 'DESC'],
-      ];
+      const order = orderBy ? orderBy.split('_') : ['dateTaken', 'DESC']; // TODO: createdDate as fall back
 
       return models.Photo.findAll({
         include: [{
