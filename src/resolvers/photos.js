@@ -68,7 +68,7 @@ const PhotosResolver = {
       if (!isNaN(parseInt(albumId, 10))) {
         id = parseInt(albumId, 10);
       } else {
-        // Slug
+        // Text slug
         const result = await models.Album.findOne({
           where: { slug: { [Op.eq]: albumId } },
         });
@@ -96,7 +96,10 @@ const PhotosResolver = {
             bin: { [Op.eq]: false },
           },
         };
-      const order = orderBy ? orderBy.split('_') : ['id', 'DESC'];
+      const order = orderBy ? orderBy.split('_') : [
+        ['dateTaken', 'DESC'],
+        ['createdAt', 'DESC'],
+      ];
 
       return models.Photo.findAll({
         include: [{
