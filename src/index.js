@@ -34,38 +34,6 @@ const schema = makeExecutableSchema({
 
 const server = new ApolloServer({
   schema,
-  // TODO: Get auth context
-  //  subscriptions: {
-  //   onConnect: (connectionParams, webSocket) => {
-  //     if (connectionParams) {
-  //       // return validateToken(connectionParams.authToken)
-  //       //   .then(findUser(connectionParams.authToken))
-  //       //   .then(user => ({
-  //       //     currentUser: user,
-  //       //   }));
-
-  //       // onConnect: async ({ token, refreshToken }, webSocket) => {
-  //       //   if (token && refreshToken) {
-  //       //     try {
-  //       //       const { user } = jwt.verify(token, SECRET);
-  //       //       return { models, user };
-  //       //     } catch (err) {
-  //       //       const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
-  //       //       return { models, user: newTokens.user };
-  //       //     }
-  //       //   }
-
-  //       //   return { models };
-  //       // },
-
-
-  //       return { user: 1 };
-  //     }
-
-  //     throw new Error('Missing auth token!');
-  //   },
-  // },
-  // Need to use connection context for subscriptions
   context: ({ req, connection }) => {
     if (connection) {
       // connection.context.x-token
@@ -106,7 +74,7 @@ const addUser = async (req, res, next) => {
 };
 
 app.use(addUser);
-app.use(bodyParser.json({ limit: '4mb' }));
+app.use(bodyParser.json({ limit: '20mb' }));
 app.use(cors(corsOptions));
 app.use(compression());
 app.use('/playground', playground({
