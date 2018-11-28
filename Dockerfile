@@ -1,11 +1,10 @@
 FROM mhart/alpine-node:10.10
 
 # Install build dependencies
-RUN apk add --update --no-cache \
-  --repository http://dl-3.alpinelinux.org/alpine/edge/testing \
-  vips-dev fftw-dev \
-  python gcc g++ make libc6-compat \
-  nodejs nodejs-npm
+RUN apk add --update --no-cache gcc g++ make libc6-compat nodejs nodejs-npm
+RUN apk add vips-dev fftw-dev build-base --no-cache \
+  --repository https://dl-3.alpinelinux.org/alpine/edge/testing/ \
+  --repository https://dl-3.alpinelinux.org/alpine/edge/main
 
 # Create app directory
 RUN mkdir -p /usr/app
