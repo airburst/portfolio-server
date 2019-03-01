@@ -1,10 +1,10 @@
-import path from 'path';
-import rimraf from 'rimraf';
 import fs, { createWriteStream } from 'file-system';
+import path from 'path';
 import progressStream from 'progress-stream';
+import rimraf from 'rimraf';
 import { UPLOAD_FOLDER } from '../constants';
+import { emitUploadProgress } from '../pubsub';
 import { ROOT } from './utils';
-import { emitUploadStarted, emitUploadProgress } from '../pubsub';
 
 // TODO: subscription
 /**

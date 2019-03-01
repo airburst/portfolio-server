@@ -1,13 +1,11 @@
-import Sequelize from 'sequelize';
 import { withFilter } from 'graphql-subscriptions';
-import {
-  storeUpload, setProgress, cleanUpload, deletePhotoFiles,
-} from '../services/file';
-import requiresAuth from '../services/permissions';
+import Sequelize from 'sequelize';
 import formatErrors from '../formatErrors';
-import processFile from '../services/processFile';
+import pubsub, { UPLOAD_PROGRESS, UPLOAD_STARTED } from '../pubsub';
 import batch from '../services/batch';
-import pubsub, { UPLOAD_STARTED, UPLOAD_PROGRESS } from '../pubsub';
+import { cleanUpload, deletePhotoFiles, storeUpload } from '../services/file';
+import requiresAuth from '../services/permissions';
+import processFile from '../services/processFile';
 
 const { Op } = Sequelize;
 
