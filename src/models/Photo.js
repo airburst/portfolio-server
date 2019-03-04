@@ -34,7 +34,11 @@ const Photo = sequelize.define('photos', {
   aperture: Sequelize.INTEGER,
   iso: Sequelize.INTEGER,
   focalLength: Sequelize.INTEGER,
-  dateTaken: Sequelize.DATE,
+  dateTaken: {
+    type: Sequelize.DATE,
+    allowNull: false,
+    defaultValue: '1990-01-01 00:00:00+00',
+  },
   isPublic: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
