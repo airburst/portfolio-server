@@ -1,7 +1,7 @@
 FROM ubuntu:18.10
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -qq -y \
   gcc g++ make libc6-compat vips-dev fftw-dev build-base nodejs nodejs-npm
 
 # Create app directory

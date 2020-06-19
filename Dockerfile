@@ -1,7 +1,9 @@
-FROM ubuntu:18.10
+FROM mhart/alpine-node:latest
 
 # Install build dependencies
-RUN apt-get update && apt-get install -qq -y \
+RUN apk add --update-cache \
+  --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
+  --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
   gcc g++ make libc6-compat vips-dev fftw-dev build-base nodejs nodejs-npm
 
 # Create app directory

@@ -1,4 +1,3 @@
-
 import path from 'path';
 import { PHOTOS_FOLDER } from '../constants';
 
@@ -8,6 +7,5 @@ export const HTTP_URL = `${process.env.SERVER_URI}:${process.env.PORT}`;
 
 export const PHOTO_URL = `${HTTP_URL}/${PHOTOS_FOLDER}`;
 
-export const ROOT = (env && env === 'development')
-  ? path.join(__dirname, '../../')
-  : '/usr/app/';
+export const ROOT =
+  env && env === 'development' ? path.join(__dirname, '../../') : '/usr/app/';

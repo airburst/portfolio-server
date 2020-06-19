@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { withFilter } from 'graphql-subscriptions';
 import Sequelize from 'sequelize';
 import formatErrors from '../formatErrors';
@@ -30,37 +31,43 @@ const PhotosResolver = {
     allPhotos: (parent, { albumId, orderBy }, { models, userId = 1 }) => {
       const filter = albumId
         ? {
-          [Op.and]: {
-            userId: { [Op.eq]: userId },
-            bin: { [Op.eq]: false },
-            '$albums.id$': { [Op.eq]: albumId },
-          },
-        }
+            [Op.and]: {
+              userId: { [Op.eq]: userId },
+              bin: { [Op.eq]: false },
+              '$albums.id$': { [Op.eq]: albumId },
+            },
+          }
         : {
-          [Op.and]: {
-            userId: { [Op.eq]: userId },
-            bin: { [Op.eq]: false },
-          },
-        };
+            [Op.and]: {
+              userId: { [Op.eq]: userId },
+              bin: { [Op.eq]: false },
+            },
+          };
       const order = orderBy ? orderBy.split('_') : ['id', 'DESC'];
 
       return models.Photo.findAll({
-        include: [{
-          model: models.Album,
-          attributes: ['id'],
-          through: 'album_photos',
-        }],
+        include: [
+          {
+            model: models.Album,
+            attributes: ['id'],
+            through: 'album_photos',
+          },
+        ],
         where: filter,
         order: [order],
       })
-        .then(result => ({
-          data: result.map(r => r.dataValues),
+        .then((result) => ({
+          data: result.map((r) => r.dataValues),
           errors: null,
         }))
-        .catch(err => ({ data: [], errors: formatErrors(err, models) }));
+        .catch((err) => ({ data: [], errors: formatErrors(err, models) }));
     },
 
-    publicPhotos: async (parent, { albumId, orderBy }, { models, userId = 1 }) => {
+    publicPhotos: async (
+      parent,
+      { albumId, orderBy },
+      { models, userId = 1 },
+    ) => {
       // Determine whether albumId is slug or number
       let id;
       if (!isNaN(parseInt(albumId, 10))) {
@@ -81,73 +88,88 @@ const PhotosResolver = {
 
       const filter = albumId
         ? {
-          [Op.and]: {
-            userId: { [Op.eq]: userId },
-            bin: { [Op.eq]: false },
-            isPublic: { [Op.eq]: true },
-            '$albums.id$': { [Op.eq]: id },
-          },
-        }
+            [Op.and]: {
+              userId: { [Op.eq]: userId },
+              bin: { [Op.eq]: false },
+              isPublic: { [Op.eq]: true },
+              '$albums.id$': { [Op.eq]: id },
+            },
+          }
         : {
-          [Op.and]: {
-            userId: { [Op.eq]: userId },
-            bin: { [Op.eq]: false },
-          },
-        };
+            [Op.and]: {
+              userId: { [Op.eq]: userId },
+              bin: { [Op.eq]: false },
+            },
+          };
 
-      const order = orderBy ? [orderBy.split('_')] : [
-        ['dateTaken', 'DESC'],
-        ['createdAt', 'DESC'],
-      ];
+      const order = orderBy
+        ? [orderBy.split('_')]
+        : [
+            ['dateTaken', 'DESC'],
+            ['createdAt', 'DESC'],
+          ];
 
       return models.Photo.findAll({
-        include: [{
-          model: models.Album,
-          attributes: ['id'],
-          through: 'album_photos',
-        }],
+        include: [
+          {
+            model: models.Album,
+            attributes: ['id'],
+            through: 'album_photos',
+          },
+        ],
         where: filter,
         order,
       })
-        .then(result => ({
-          data: result.map(r => r.dataValues),
+        .then((result) => ({
+          data: result.map((r) => r.dataValues),
           errors: null,
         }))
-        .catch(err => ({ data: [], errors: formatErrors(err, models) }));
+        .catch((err) => ({ data: [], errors: formatErrors(err, models) }));
     },
   },
 
   Mutation: {
     uploadPhoto: requiresAuth.createResolver(
       async (parent, { file }, { models, user, totalUploadSize }) => {
-        const { stream, filename, mimetype } = await file;
+        const { createReadStream, filename, mimetype } = await file;
 
         // Image files only (jpg)
         if (mimetype !== 'image/jpeg') {
-          console.error(`User tried to upload a file with mimetype: ${mimetype}`);
-          return { success: false, error: 'You cannot upload this type of file' };
+          console.error(
+            `User tried to upload a file with mimetype: ${mimetype}`,
+          );
+          return {
+            success: false,
+            error: 'You cannot upload this type of file',
+          };
         }
 
         try {
-          // const progress = setProgress(size, filename);
-          await storeUpload(stream, filename);
-          // await storeUpload(stream, filename, progress);
+          await storeUpload(createReadStream, filename);
 
           // Process the file
-          const {
-            exif, error, urls, thumbnail, name,
-          } = await processFile(filename);
+          const { exif, error, urls, thumbnail, name } = await processFile(
+            filename,
+          );
 
           // Write to database
           const photoData = {
-            ...exif, urls, thumbnail, name, userId: user.id,
+            ...exif,
+            urls,
+            thumbnail,
+            name,
+            userId: user.id,
           };
           await models.Photo.create(photoData);
 
           await cleanUpload(filename);
 
           return {
-            name, success: true, exif: JSON.stringify(exif), error, thumbnail,
+            name,
+            success: true,
+            exif: JSON.stringify(exif),
+            error,
+            thumbnail,
           };
         } catch (err) {
           console.error(`FAIL: Unable to upload ${filename}`);

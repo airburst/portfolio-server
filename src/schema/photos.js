@@ -29,9 +29,9 @@ export default `
     caption: String
     width: Int!
     height: Int!
-    exposure: Int
-    shutter: Int
-    aperture: Int
+    exposure: Float
+    shutter: Float
+    aperture: Float
     iso: Int
     focalLength: Int
     dateTaken: String
