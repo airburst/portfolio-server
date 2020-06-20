@@ -89,20 +89,34 @@ export const resize = (filename, exif) => async (size) => {
   const inPath = path.join(ROOT, UPLOAD_FOLDER, filename);
   const ext = path.extname(filename);
   const outName = makeFolderName(
-    `${filename.split(ext)[0]}${getDimensions(size)}${ext}`,
+    `${filename.split(ext)[0]}${getDimensions(size)}.webp`, // Change to webp
   );
   try {
     writePath(outName);
-
     const outPath = path.join(outName);
+
+    // Convert to Webp format for efficiency
     if (typeof size === 'number') {
-      await sharp(inPath).resize(size).toFormat('jpeg').toFile(outPath);
+      await sharp(inPath)
+        .resize(size)
+        .webp()
+        // .webp({ nearLossless: true, smartSubsample: true })
+        .toFile(outPath);
     } else {
       await sharp(inPath)
         .resize(size.width, size.height)
-        .toFormat('jpeg')
+        .webp()
         .toFile(outPath);
     }
+    // if (typeof size === 'number') {
+    //   await sharp(inPath).resize(size).toFormat('jpeg').toFile(outPath);
+    // } else {
+    //   await sharp(inPath)
+    //     .resize(size.width, size.height)
+    //     .toFormat('jpeg')
+    //     .toFile(outPath);
+    // }
+
     // Convert file paths to relative server paths
     return Promise.resolve(makeRelativePath(outPath));
   } catch (e) {

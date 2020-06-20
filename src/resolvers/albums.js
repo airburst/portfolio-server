@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import Sequelize from 'sequelize';
 import requiresAuth from '../services/permissions';
 import formatErrors from '../formatErrors';
@@ -11,28 +12,28 @@ const AlbumsResolver = {
       (parent, { id }, { models, user }) => {
         const filter = id
           ? {
-            [Op.and]: {
-              userId: { [Op.eq]: user.id },
-              bin: { [Op.eq]: false },
-              id: { [Op.eq]: id },
-            },
-          }
+              [Op.and]: {
+                userId: { [Op.eq]: user.id },
+                bin: { [Op.eq]: false },
+                id: { [Op.eq]: id },
+              },
+            }
           : {
-            [Op.and]: {
-              userId: { [Op.eq]: user.id },
-              bin: { [Op.eq]: false },
-            },
-          };
+              [Op.and]: {
+                userId: { [Op.eq]: user.id },
+                bin: { [Op.eq]: false },
+              },
+            };
         return models.Album.findAll({
           where: filter,
           include: [{ model: models.Photo, as: 'photos' }],
           order: [['name']],
         })
-          .then(result => ({
-            data: result.map(r => r.dataValues),
+          .then((result) => ({
+            data: result.map((r) => r.dataValues),
             errors: null,
           }))
-          .catch(err => ({ data: [], errors: formatErrors(err, models) }));
+          .catch((err) => ({ data: [], errors: formatErrors(err, models) }));
       },
     ),
 
@@ -50,11 +51,11 @@ const AlbumsResolver = {
         include: [{ model: models.Photo, as: 'photos' }],
         order: [['createdAt', 'DESC']],
       })
-        .then(result => ({
-          data: result.map(r => r.dataValues),
+        .then((result) => ({
+          data: result.map((r) => r.dataValues),
           errors: null,
         }))
-        .catch(err => ({ data: [], errors: formatErrors(err, models) })),
+        .catch((err) => ({ data: [], errors: formatErrors(err, models) })),
 
     getAlbum: (parent, { albumId }, { models }) =>
       models.Album.findOne({
@@ -67,11 +68,11 @@ const AlbumsResolver = {
         },
         include: [{ model: models.Photo, as: 'photos' }],
       })
-        .then(result => ({
+        .then((result) => ({
           data: result.dataValues,
           errors: null,
         }))
-        .catch(err => ({ data: null, errors: formatErrors(err, models) })),
+        .catch((err) => ({ data: null, errors: formatErrors(err, models) })),
   },
 
   Mutation: {
@@ -92,16 +93,21 @@ const AlbumsResolver = {
     addPhotosToAlbum: requiresAuth.createResolver(
       async (parent, { albumId, photoIds }, { models }) => {
         try {
-          const album = await models.Album.findById(albumId);
-          if (!album) { return false; }
+          const album = await models.Album.findByPk(albumId);
+          if (!album) {
+            return false;
+          }
 
           // Set first photo as default album cover if none set
           if (!album.dataValues.cover) {
-            const firstPhoto = await models.Photo.findById(photoIds[0]);
+            const firstPhoto = await models.Photo.findByPk(photoIds[0]);
             // Set cover photo id and url
             const cover = firstPhoto.dataValues.urls[COVER_SIZE];
             const coverId = firstPhoto.dataValues.id;
-            await models.Album.update({ cover, coverId }, { where: { id: albumId } });
+            await models.Album.update(
+              { cover, coverId },
+              { where: { id: albumId } },
+            );
           }
 
           // Add photos to the album
@@ -116,8 +122,10 @@ const AlbumsResolver = {
     removePhotosFromAlbum: requiresAuth.createResolver(
       async (parent, { albumId, photoIds }, { models }) => {
         try {
-          const album = await models.Album.findById(albumId);
-          if (!album) { return false; }
+          const album = await models.Album.findByPk(albumId);
+          if (!album) {
+            return false;
+          }
           const result = await album.removePhotos(photoIds);
           return { data: !!result, errors: null };
         } catch (err) {
@@ -127,7 +135,7 @@ const AlbumsResolver = {
     ),
 
     addView: async (parent, { albumId }, { models }) => {
-      const album = await models.Album.findById(albumId);
+      const album = await models.Album.findByPk(albumId);
       let { views } = album.dataValues;
       views += 1;
       return !!album.update({ views });
